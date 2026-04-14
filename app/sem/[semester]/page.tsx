@@ -1,16 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   type CoursesJson,
+  decodeParam,
   formatSemesterLabel,
-  semesterSortKey,
 } from "@/lib/catalog";
 
-export default function Home() {
-  const [error, setError] = useState<string | null>(null);
+export default function SemesterPage() {
+  const params = useParams<{ semester: string | string[] }>();
+  const semesterKey = decodeParam(params.semester);
+
   const [courses, setCourses] = useState<CoursesJson | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -35,21 +39,25 @@ export default function Home() {
     };
   }, []);
 
-  const semesters = useMemo(() => {
-    const keys = courses ? Object.keys(courses.CSE_Syllabus_ASTU ?? {}) : [];
-    return keys.slice().sort((a, b) => semesterSortKey(a) - semesterSortKey(b));
-  }, [courses]);
+  const semester = courses?.CSE_Syllabus_ASTU?.[semesterKey];
+
+  const subjects = useMemo(() => {
+    return semester?.subjects?.map((s) => s.name) ?? [];
+  }, [semester]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto w-full max-w-3xl px-4 py-8">
         <header className="mb-6">
+          <div className="mb-2">
+            <Link href="/" className="text-sm opacity-80 hover:opacity-100">
+              ← Home
+            </Link>
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight">
-            BVEC Study Hub
+            {formatSemesterLabel(semesterKey)}
           </h1>
-          <p className="text-sm opacity-80">
-            Choose a semester, then pick a subject.
-          </p>
+          <p className="text-sm opacity-80">{semester?.focus ?? "Choose a subject."}</p>
         </header>
 
         {error ? (
@@ -59,23 +67,25 @@ export default function Home() {
         ) : null}
 
         <div className="rounded-xl border border-black/10 dark:border-white/15 p-4">
-          <h2 className="text-sm font-medium mb-3">Semesters</h2>
+          <h2 className="text-sm font-medium mb-3">Subjects</h2>
           {isLoading ? (
             <div className="text-sm opacity-70">Loading…</div>
-          ) : semesters.length === 0 ? (
-            <div className="text-sm opacity-70">No semesters found in `public/courses.json`.</div>
+          ) : !semester ? (
+            <div className="text-sm opacity-70">
+              Semester not found in `public/courses.json`.
+            </div>
+          ) : subjects.length === 0 ? (
+            <div className="text-sm opacity-70">No subjects listed.</div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {semesters.map((semesterKey) => (
+            <div className="space-y-2">
+              {semester.subjects.map((s) => (
                 <Link
-                  key={semesterKey}
-                  href={`/sem/${semesterKey}`}
-                  className="rounded-xl border border-black/10 dark:border-white/15 p-4 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  key={s.name}
+                  href={`/sem/${encodeURIComponent(semesterKey)}/${encodeURIComponent(s.name)}`}
+                  className="block rounded-xl border border-black/10 dark:border-white/15 p-4 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
                 >
-                  <div className="font-medium">{formatSemesterLabel(semesterKey)}</div>
-                  <div className="text-sm opacity-70">
-                    {courses?.CSE_Syllabus_ASTU?.[semesterKey]?.focus ?? "View subjects"}
-                  </div>
+                  <div className="font-medium">{s.name}</div>
+                  <div className="text-sm opacity-70">{s.context ?? "Open subject"}</div>
                 </Link>
               ))}
             </div>
@@ -85,3 +95,4 @@ export default function Home() {
     </div>
   );
 }
+

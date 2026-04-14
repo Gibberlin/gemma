@@ -1,8 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) app that chats with a **local LM Studio server** (OpenAI-compatible API).
 
 ## Getting Started
 
-First, run the development server:
+### 1) Start LM Studio local server
+
+- In LM Studio, load a model.
+- Start the server with the **OpenAI compatible** option.
+- Default base URL is usually `http://localhost:1234/v1`.
+
+### 2) Configure environment variables
+
+This repo includes a `.env` you can edit, and a `.env.example` as reference:
+
+- `LMSTUDIO_API_BASE_URL` (example: `http://localhost:1234/v1`)
+- `LMSTUDIO_MODEL` (must match the model id LM Studio exposes, e.g. `google/gemma-4-e4b`)
+- `LMSTUDIO_API_KEY` (usually can be empty for local LM Studio)
+
+### 3) Run the dev server
 
 ```bash
 npm run dev
@@ -16,9 +30,7 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The UI calls `POST /api/chat`, which proxies requests to your local LM Studio server.
 
 ## Learn More
 
