@@ -1,48 +1,128 @@
-This is a [Next.js](https://nextjs.org) app that chats with a **local LM Studio server** (OpenAI-compatible API).
+# Gemma: Next.js Chat App with LM Studio Integration
+
+Gemma is a [Next.js](https://nextjs.org) application designed to interact with a **local LM Studio server** (OpenAI-compatible API). This project enables seamless communication with language models hosted locally, providing a robust and customizable chat interface.
+
+## Features
+
+- **Next.js Framework**: Leverages the power of Next.js for server-side rendering and optimized performance.
+- **LM Studio Integration**: Connects to a local LM Studio server for AI model interactions.
+- **Dynamic Routing**: Organized structure for handling semester, subject, and material-specific pages.
+- **Customizable API**: Proxy API for secure and efficient communication with the LM Studio server.
+
+## Dashboard
+
+![Dashboard](pasted-image-1.png)
+
+The dashboard provides an overview of the available semesters and subjects, allowing users to navigate seamlessly through the application.
+
+## Chat Functionality
+
+![Chat Functionality](pasted-image-2.png)
+
+The chat functionality demonstrates how the application can be used to interact with the LM Studio server. For example, users can ask questions like "How to find Standard Deviation?" and receive detailed explanations.
+
+## Student ERP Schema
+
+![Student ERP Schema](pasted-image-3.png)
+
+The application also provides detailed visualizations and explanations, such as the schema for a student ERP model, making it a valuable tool for educational purposes.
+
+## Code Highlighting
+
+![Code Highlighting](pasted-image-4.png)
+
+The application supports syntax highlighting for code snippets, enhancing readability and learning experiences.
+
+## Prerequisites
+
+Before starting, ensure you have the following installed:
+
+- [Node.js](https://nodejs.org) (v16 or higher recommended)
+- [LM Studio](https://lmstudio.ai) with a compatible model loaded
 
 ## Getting Started
 
-### 1) Start LM Studio local server
+Follow these steps to set up and run the project locally:
 
-- In LM Studio, load a model.
-- Start the server with the **OpenAI compatible** option.
-- Default base URL is usually `http://localhost:1234/v1`.
+### 1. Start LM Studio Local Server
 
-### 2) Configure environment variables
+1. Open LM Studio and load a model.
+2. Start the server with the **OpenAI-compatible** option enabled.
+3. Note the base URL (default: `http://localhost:1234/v1`).
 
-This repo includes a `.env` you can edit, and a `.env.example` as reference:
+### 2. Configure Environment Variables
 
-- `LMSTUDIO_API_BASE_URL` (example: `http://localhost:1234/v1`)
-- `LMSTUDIO_MODEL` (must match the model id LM Studio exposes, e.g. `google/gemma-4-e4b`)
-- `LMSTUDIO_API_KEY` (usually can be empty for local LM Studio)
+This repository includes a `.env` file for configuration. Use `.env.example` as a reference. Update the following variables:
 
-### 3) Run the dev server
+- `LMSTUDIO_API_BASE_URL`: Base URL of the LM Studio server (e.g., `http://localhost:1234/v1`).
+- `LMSTUDIO_MODEL`: Model ID exposed by LM Studio (e.g., `google/gemma-4-e4b`).
+- `LMSTUDIO_API_KEY`: API key for LM Studio (leave empty for local servers).
+
+### 3. Install Dependencies
+
+Run the following command to install the required dependencies:
+
+```bash
+npm install
+```
+
+### 4. Run the Development Server
+
+Start the development server with:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at [http://localhost:3000](http://localhost:3000).
 
-The UI calls `POST /api/chat`, which proxies requests to your local LM Studio server.
+## Project Structure
+
+```
+app/
+  globals.css       # Global styles
+  layout.tsx        # Application layout
+  page.tsx          # Home page
+  api/
+    chat/           # Chat API route
+  components/
+    ChatPanel.tsx   # Chat panel component
+  sem/              # Semester-specific pages
+    [semester]/
+      page.tsx      # Semester overview
+      [subject]/
+        page.tsx    # Subject overview
+        materials/  # Materials page
+        qa/         # Q&A page
+lib/
+  catalog.ts        # Catalog utilities
+  lmstudio.ts       # LM Studio utilities
+  server-env.ts     # Server environment configuration
+public/
+  courses.json      # Course data
+  materials.json    # Materials data
+```
+
+## API Overview
+
+The application uses the following API endpoint:
+
+- **POST /api/chat**: Proxies requests to the LM Studio server. Ensure the LM Studio server is running and accessible.
+
+## Deployment
+
+To deploy the application, consider using [Vercel](https://vercel.com), the platform built by the creators of Next.js. Follow the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for detailed instructions.
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+- [Next.js Documentation](https://nextjs.org/docs): Learn about Next.js features and APIs.
+- [LM Studio Documentation](https://lmstudio.ai/docs): Explore LM Studio capabilities.
+- [Vercel Platform](https://vercel.com): Deploy your Next.js app effortlessly.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Contributions are welcome! Feel free to submit issues or pull requests to improve the project.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the [MIT License](LICENSE).
