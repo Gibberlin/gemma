@@ -11,19 +11,19 @@ Gemma is a [Next.js](https://nextjs.org) application designed to interact with a
 
 ## Dashboard
 
-![Dashboard](pasted-image-1.png)
+![Dashboard](pasted-image-3.png)
 
 The dashboard provides an overview of the available semesters and subjects, allowing users to navigate seamlessly through the application.
 
 ## Chat Functionality
 
-![Chat Functionality](pasted-image-2.png)
+![Chat Functionality](pasted-image-1.png)
 
 The chat functionality demonstrates how the application can be used to interact with the LM Studio server. For example, users can ask questions like "How to find Standard Deviation?" and receive detailed explanations.
 
 ## Student ERP Schema
 
-![Student ERP Schema](pasted-image-3.png)
+![Student ERP Schema](pasted-image-2.png)
 
 The application also provides detailed visualizations and explanations, such as the schema for a student ERP model, making it a valuable tool for educational purposes.
 
