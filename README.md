@@ -1,128 +1,171 @@
-# Gemma: Next.js Chat App with LM Studio Integration
+# Gemma — Local AI Study Chat (Next.js + LM Studio)
 
-Gemma is a [Next.js](https://nextjs.org) application designed to interact with a **local LM Studio server** (OpenAI-compatible API). This project enables seamless communication with language models hosted locally, providing a robust and customizable chat interface.
+Gemma is a Next.js-based study assistant that connects to a locally hosted LM Studio server (OpenAI-compatible API). It provides a structured academic interface where users can navigate subjects and interact with a local language model for explanations, problem-solving, and code assistance.
+
+---
+
+## Overview
+
+This project combines:
+
+* Structured academic navigation (semester → subject → Q&A)
+* Local LLM interaction (via LM Studio)
+* Rich formatted responses (Markdown, code, math-ready)
+
+It is designed as a lightweight, offline-capable learning tool.
+
+---
+
+## Interface
+
+### Study Hub
+
+<p align="center">
+  <img src="./public/images/image1.png" width="800"/>
+</p>
+
+The main entry point where users browse semesters and select subjects.
+
+---
+
+### Subject Q&A (Conceptual / Theory)
+
+<p align="center">
+  <img src="./public/images/image2.png" width="800"/>
+</p>
+
+Supports structured explanations for theoretical topics such as probability, statistics, and system concepts.
+
+---
+
+### Subject Q&A (Code / Technical)
+
+<p align="center">
+  <img src="./public/images/image3.png" width="800"/>
+</p>
+
+Handles technical responses including SQL schemas, formatted code blocks, and structured outputs.
+
+---
 
 ## Features
 
-- **Next.js Framework**: Leverages the power of Next.js for server-side rendering and optimized performance.
-- **LM Studio Integration**: Connects to a local LM Studio server for AI model interactions.
-- **Dynamic Routing**: Organized structure for handling semester, subject, and material-specific pages.
-- **Customizable API**: Proxy API for secure and efficient communication with the LM Studio server.
+* Next.js App Router architecture
+* Integration with LM Studio (local OpenAI-compatible API)
+* Structured academic navigation
+* Markdown rendering with:
 
-## Dashboard
+  * Headings, lists, emphasis
+  * Code blocks with syntax highlighting
+  * Support for mathematical expressions (LaTeX-ready)
+* Custom API proxy for secure model communication
+* Local-first workflow (no external API dependency)
 
-![Dashboard](public/images/dashboard.png)
+---
 
-The dashboard provides an overview of the available semesters and subjects, allowing users to navigate seamlessly through the application.
+## Tech Stack
 
-## Chat Functionality
+* **Frontend:** Next.js, TypeScript, Tailwind CSS
+* **Backend:** Next.js API routes
+* **AI Runtime:** LM Studio (local models)
+* **Rendering:** Markdown + syntax highlighting + math support
 
-![Chat Functionality](public/images/chat-functionality.png)
+---
 
-The chat functionality demonstrates how the application can be used to interact with the LM Studio server. For example, users can ask questions like "How to find Standard Deviation?" and receive detailed explanations.
+## Setup
 
-## Student ERP Schema
+### 1. Start LM Studio
 
-![Student ERP Schema](public/images/student-erp-schema.png)
+* Load a model
+* Enable OpenAI-compatible server
 
-The application also provides detailed visualizations and explanations, such as the schema for a student ERP model, making it a valuable tool for educational purposes.
+Default endpoint:
 
-## Code Highlighting
+```
+http://localhost:1234/v1
+```
 
-![Code Highlighting](public/images/code-highlighting.png)
+---
 
-The application supports syntax highlighting for code snippets, enhancing readability and learning experiences.
+### 2. Environment Configuration
 
-## Prerequisites
+Create a `.env` file:
 
-Before starting, ensure you have the following installed:
+```env
+LMSTUDIO_API_BASE_URL=http://localhost:1234/v1
+LMSTUDIO_MODEL=google/gemma-4-e4b
+LMSTUDIO_API_KEY=
+```
 
-- [Node.js](https://nodejs.org) (v16 or higher recommended)
-- [LM Studio](https://lmstudio.ai) with a compatible model loaded
-
-## Getting Started
-
-Follow these steps to set up and run the project locally:
-
-### 1. Start LM Studio Local Server
-
-1. Open LM Studio and load a model.
-2. Start the server with the **OpenAI-compatible** option enabled.
-3. Note the base URL (default: `http://localhost:1234/v1`).
-
-### 2. Configure Environment Variables
-
-This repository includes a `.env` file for configuration. Use `.env.example` as a reference. Update the following variables:
-
-- `LMSTUDIO_API_BASE_URL`: Base URL of the LM Studio server (e.g., `http://localhost:1234/v1`).
-- `LMSTUDIO_MODEL`: Model ID exposed by LM Studio (e.g., `google/gemma-4-e4b`).
-- `LMSTUDIO_API_KEY`: API key for LM Studio (leave empty for local servers).
+---
 
 ### 3. Install Dependencies
-
-Run the following command to install the required dependencies:
 
 ```bash
 npm install
 ```
 
-### 4. Run the Development Server
+---
 
-Start the development server with:
+### 4. Run the Application
 
 ```bash
 npm run dev
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000).
+Open in browser:
+
+```
+http://localhost:3000
+```
+
+---
 
 ## Project Structure
 
 ```
 app/
-  globals.css       # Global styles
-  layout.tsx        # Application layout
-  page.tsx          # Home page
-  api/
-    chat/           # Chat API route
-  components/
-    ChatPanel.tsx   # Chat panel component
-  sem/              # Semester-specific pages
-    [semester]/
-      page.tsx      # Semester overview
-      [subject]/
-        page.tsx    # Subject overview
-        materials/  # Materials page
-        qa/         # Q&A page
+  api/chat/        # Chat API route
+  components/      # UI components
+  sem/             # Semester-based routing
 lib/
-  catalog.ts        # Catalog utilities
-  lmstudio.ts       # LM Studio utilities
-  server-env.ts     # Server environment configuration
+  lmstudio.ts      # LM Studio integration
+  catalog.ts       # Academic utilities
 public/
-  courses.json      # Course data
-  materials.json    # Materials data
+  images/          # Screenshots
+  courses.json     # Course metadata
+  materials.json   # Learning resources
 ```
 
-## API Overview
+---
 
-The application uses the following API endpoint:
+## API
 
-- **POST /api/chat**: Proxies requests to the LM Studio server. Ensure the LM Studio server is running and accessible.
+### POST /api/chat
 
-## Deployment
+* Proxies requests to LM Studio
+* Returns structured responses for rendering
 
-To deploy the application, consider using [Vercel](https://vercel.com), the platform built by the creators of Next.js. Follow the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for detailed instructions.
+---
 
-## Learn More
+## Notes
 
-- [Next.js Documentation](https://nextjs.org/docs): Learn about Next.js features and APIs.
-- [LM Studio Documentation](https://lmstudio.ai/docs): Explore LM Studio capabilities.
-- [Vercel Platform](https://vercel.com): Deploy your Next.js app effortlessly.
+* Performance depends on local hardware and model size
+* Smaller models (2B–7B) are recommended for stability
+* Proper Markdown rendering is required for full UI experience
 
-## Contributing
+---
 
-Contributions are welcome! Feel free to submit issues or pull requests to improve the project.
+## Future Improvements
+
+* Streaming responses
+* Enhanced math rendering
+* Code block UX (copy, themes)
+* Persistent chat sessions
+* ERP-style academic system integration
+
+---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+MIT License
