@@ -50,8 +50,8 @@ export default function MaterialsPage() {
   const backHref = `/sem/${encodeURIComponent(semesterKey)}/${encodeURIComponent(subjectName)}`;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-3xl px-4 py-8">
+    <div className="min-h-screen bg-transparent text-foreground">
+      <div className="mx-auto w-full max-w-3xl px-6 py-10">
         <header className="mb-6">
           <div className="mb-2">
             <Link href={backHref} className="text-sm opacity-80 hover:opacity-100">
@@ -65,12 +65,12 @@ export default function MaterialsPage() {
         </header>
 
         {error ? (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">
+          <div className="mb-4 rounded-2xl border border-danger bg-danger-weak p-4 text-sm text-danger">
             {error}
           </div>
         ) : null}
 
-        <div className="rounded-xl border border-black/10 dark:border-white/15 p-4 space-y-3">
+        <div className="card p-6 space-y-4">
           {isLoading ? (
             <div className="text-sm opacity-70">Loading…</div>
           ) : !materials ? (
@@ -85,34 +85,34 @@ export default function MaterialsPage() {
             </div>
           ) : (
             <>
-              <div className="rounded-lg border border-black/10 dark:border-white/15 p-4">
+              <div className="rounded-2xl border border-divider bg-background p-5">
                 <div className="text-sm opacity-70 mb-1">Module reference</div>
-                <div className="font-medium">
+                <div className="font-medium text-text-primary">
                   {subjectMaterial.module_ref ?? "—"}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <a
-                  className="rounded-xl border border-black/10 dark:border-white/15 p-4 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  className="card card-hover p-6"
                   href={subjectMaterial.pdf ?? semester.pdf ?? "#"}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <div className="font-medium">Subject PDF</div>
-                  <div className="text-sm opacity-70 break-words">
+                  <div className="font-medium text-text-primary">Subject PDF</div>
+                  <div className="mt-1 text-sm opacity-80 break-words">
                     {subjectMaterial.pdf ?? semester.pdf ?? "No PDF link"}
                   </div>
                 </a>
 
                 <a
-                  className="rounded-xl border border-black/10 dark:border-white/15 p-4 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  className="card card-hover p-6"
                   href={semester.pdf ?? "#"}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <div className="font-medium">Semester PDF</div>
-                  <div className="text-sm opacity-70 break-words">
+                  <div className="font-medium text-text-primary">Semester PDF</div>
+                  <div className="mt-1 text-sm opacity-80 break-words">
                     {semester.pdf ?? "No PDF link"}
                   </div>
                 </a>
@@ -135,4 +135,3 @@ export default function MaterialsPage() {
     </div>
   );
 }
-

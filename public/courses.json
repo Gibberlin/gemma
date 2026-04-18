@@ -1,163 +1,258 @@
 {
-  "system_role": "You are an academic assistant trained on ASTU (Assam Science and Technology University) CSE syllabus. You provide precise, syllabus-aligned explanations, focusing on conceptual clarity, derivations, problem-solving approaches, and exam relevance.",
-  
+  "system_role": "You are an academic assistant trained on the ASTU CSE syllabus. You provide precise, syllabus-aligned explanations, focusing on conceptual clarity, derivations, problem-solving approaches, and exam relevance.",
   "CSE_Syllabus_ASTU": {
+    "Bridge_Courses": {
+      "focus": "Essential mathematical and programmatic foundations for transition into degree-level engineering.",
+      "subjects": [
+        {
+          "name": "Advanced Engineering Calculus & Matrices",
+          "context": "Fills the gap between diploma-level math and the rigorous Mathematics III requirements.",
+          "key_topics": [
+            "Differential Equations",
+            "Matrix Eigenvalues",
+            "Vector Calculus"
+          ],
+          "difficulty": "High"
+        },
+        {
+          "name": "C Programming Deep Dive",
+          "context": "Essential prerequisite for DSA and Object-Oriented Programming.",
+          "key_topics": [
+            "Pointers",
+            "Memory Allocation (malloc/free)",
+            "Structs"
+          ],
+          "difficulty": "Medium"
+        }
+      ]
+    },
     "Semester_3": {
       "focus": "Introduction to core computing, programming paradigms, and digital logic fundamentals",
       "subjects": [
         {
           "name": "Mathematics III",
-          "context": "Topics include linear algebra, matrices, eigenvalues, and Laplace/Fourier transforms with emphasis on solving engineering problems."
-        },
-        {
-          "name": "Object Oriented Programming (C++)",
-          "context": "Covers classes, objects, constructors, inheritance, polymorphism, operator overloading, and file handling with practical implementation."
-        },
-        {
-          "name": "Digital Systems",
-          "context": "Boolean algebra, logic gates, combinational and sequential circuits, minimization techniques, and digital circuit design."
+          "key_topics": [
+            "Linear Algebra",
+            "Laplace Transforms",
+            "Fourier Series"
+          ],
+          "textbook": "Higher Engineering Mathematics by B.S. Grewal",
+          "importance": "High (Foundation for Signals)"
         },
         {
           "name": "Data Structures & Algorithms",
-          "context": "Arrays, linked lists, stacks, queues, trees, graphs, sorting and searching algorithms with time and space complexity analysis."
+          "context": "Arrays, linked lists, stacks, queues, trees, graphs, sorting and searching algorithms with time and space complexity analysis.",
+          "key_topics": [
+            "Binary Search Trees",
+            "Asymptotic Notation",
+            "Graph Traversals (BFS/DFS)"
+          ],
+          "textbook": "Fundamentals of Data Structures in C++ by Horowitz & Sahni",
+          "prerequisites": [
+            "C Programming Deep Dive"
+          ],
+          "difficulty": "High",
+          "lab_component": true
         },
         {
-          "name": "Signals & Systems",
-          "context": "Continuous and discrete signals, system properties, convolution, Fourier series and transforms with engineering applications."
+          "name": "Digital Systems",
+          "context": "Boolean algebra, logic gates, combinational and sequential circuits, minimization techniques, and digital circuit design.",
+          "key_topics": [
+            "K-Maps",
+            "Multiplexers",
+            "Flip-Flops",
+            "State Machines"
+          ],
+          "textbook": "Digital Design by M. Morris Mano",
+          "difficulty": "Medium",
+          "lab_component": true
         },
         {
-          "name": "Constitution of India",
-          "context": "Fundamental rights, duties, governance structure, and ethical responsibilities."
+          "name": "Object Oriented Programming (C++)",
+          "key_topics": [
+            "Classes",
+            "Polymorphism",
+            "Inheritance",
+            "Operator Overloading"
+          ],
+          "textbook": "Object Oriented Programming with C++ by E. Balagurusamy"
         }
       ]
     },
-
     "Semester_4": {
       "focus": "Understanding system-level design and interaction between hardware and software",
       "subjects": [
         {
-          "name": "Numerical Methods",
-          "context": "Root finding, interpolation, numerical differentiation/integration, and solving differential equations using computational techniques."
-        },
-        {
-          "name": "Graph Theory",
-          "context": "Graphs, trees, connectivity, shortest path algorithms, planar graphs, and applications in computing."
-        },
-        {
           "name": "Operating Systems",
-          "context": "Process management, CPU scheduling, deadlocks, memory management, file systems, and synchronization mechanisms."
+          "context": "Process management, CPU scheduling, deadlocks, memory management, file systems, and synchronization mechanisms.",
+          "key_topics": [
+            "Kernel Architecture",
+            "Concurrency",
+            "Paging & Segmentation",
+            "File System Implementation"
+          ],
+          "textbook": "Operating System Concepts by Silberschatz & Galvin",
+          "system_track": true,
+          "difficulty": "High",
+          "lab_component": true
         },
         {
           "name": "Computer Organization & Architecture",
-          "context": "Instruction sets, CPU organization, memory hierarchy, I/O systems, and performance evaluation."
+          "context": "Instruction sets, CPU organization, memory hierarchy, I/O systems, and performance evaluation.",
+          "key_topics": [
+            "Von Neumann Model",
+            "Pipelining Hazards",
+            "Cache Coherence",
+            "Assembly Basics"
+          ],
+          "textbook": "Computer System Architecture by M. Morris Mano",
+          "system_track": true,
+          "difficulty": "High"
         },
         {
-          "name": "Programming Languages",
-          "context": "Syntax, semantics, parsing techniques, runtime environments, and comparison of programming paradigms."
-        },
-        {
-          "name": "Economics & Accountancy",
-          "context": "Basic economic principles, cost analysis, and financial accounting relevant to engineering systems."
+          "name": "Graph Theory",
+          "key_topics": [
+            "Eulerian Paths",
+            "Planarity",
+            "Coloring"
+          ],
+          "textbook": "Graph Theory by Narsingh Deo"
         }
       ]
     },
-
     "Semester_5": {
-      "focus": "Development of theoretical foundations and core system components",
+      "focus": "Development of theoretical foundations and core hardware/software components",
       "subjects": [
         {
-          "name": "Probability & Random Processes",
-          "context": "Probability theory, distributions, random variables, stochastic processes, and applications in computing systems."
-        },
-        {
-          "name": "Formal Language & Automata Theory",
-          "context": "Regular expressions, DFA/NFA, context-free grammars, pushdown automata, and Turing machines."
-        },
-        {
-          "name": "Computer Graphics",
-          "context": "2D/3D transformations, viewing pipeline, rasterization, clipping, and basic rendering techniques."
+          "name": "Microprocessor & Microcontroller",
+          "context": "Architecture, instruction sets, assembly programming, interfacing, and embedded system basics.",
+          "key_topics": [
+            "8086 Architecture",
+            "Interrupts",
+            "DMA",
+            "Peripheral Interfacing"
+          ],
+          "textbook": "Microprocessor Architecture by Ramesh Gaonkar",
+          "system_track": true,
+          "difficulty": "High",
+          "lab_component": true
         },
         {
           "name": "Database Management Systems",
-          "context": "Relational model, SQL, normalization, indexing, transactions, concurrency control, and recovery."
+          "context": "Relational model, SQL, normalization, indexing, transactions, concurrency control, and recovery.",
+          "key_topics": [
+            "ACID Properties",
+            "B+ Trees",
+            "Query Optimization",
+            "Normal Forms"
+          ],
+          "textbook": "Database System Concepts by Korth & Silberschatz",
+          "difficulty": "Medium-High",
+          "lab_component": true
         },
         {
-          "name": "Microprocessor & Microcontroller",
-          "context": "Architecture, instruction sets, assembly programming, interfacing, and embedded system basics."
-        },
-        {
-          "name": "Principles of Management",
-          "context": "Management theories, planning, organizing, leadership, and decision-making processes."
+          "name": "Formal Language & Automata Theory",
+          "context": "Regular expressions, DFA/NFA, context-free grammars, pushdown automata, and Turing machines.",
+          "key_topics": [
+            "Chomsky Hierarchy",
+            "Pumping Lemma",
+            "Decidability"
+          ],
+          "textbook": "Introduction to Automata Theory by Hopcroft & Ullman",
+          "prerequisites": [
+            "Data Structures & Algorithms"
+          ],
+          "difficulty": "High"
         }
       ]
     },
-
     "Semester_6": {
-      "focus": "Advanced computing systems and software development methodologies",
+      "focus": "Advanced computing systems, network protocols, and software translation",
       "subjects": [
         {
-          "name": "Computer Networks",
-          "context": "OSI and TCP/IP models, routing algorithms, congestion control, data link protocols, and network security basics."
-        },
-        {
-          "name": "Software Engineering",
-          "context": "Software development lifecycle, requirement analysis, design methodologies, testing, and maintenance."
-        },
-        {
           "name": "Compiler Design",
-          "context": "Lexical analysis, syntax parsing, semantic analysis, intermediate code generation, optimization, and code generation."
+          "context": "Lexical analysis, syntax parsing, semantic analysis, intermediate code generation, optimization, and code generation.",
+          "key_topics": [
+            "Abstract Syntax Trees",
+            "LR Parsing",
+            "Register Allocation",
+            "Code Optimization"
+          ],
+          "textbook": "Compilers: Principles, Techniques, and Tools by Aho & Ullman",
+          "system_track": true,
+          "prerequisites": [
+            "Formal Language & Automata Theory",
+            "C Programming Deep Dive"
+          ],
+          "difficulty": "High",
+          "lab_component": true
         },
         {
-          "name": "Advanced Algorithms / Theory",
-          "context": "Algorithm design paradigms such as divide and conquer, greedy methods, dynamic programming, and complexity analysis."
+          "name": "Computer Networks",
+          "context": "OSI and TCP/IP models, routing algorithms, congestion control, data link protocols, and network security basics.",
+          "key_topics": [
+            "TCP/UDP",
+            "Subnetting",
+            "BGP/OSPF",
+            "MAC Protocols"
+          ],
+          "textbook": "Data Communications and Networking by Behrouz A. Forouzan",
+          "system_track": true,
+          "difficulty": "Medium-High",
+          "lab_component": true
         }
       ]
     },
-
     "Semester_7": {
-      "focus": "Application of knowledge in secure and large-scale systems with industry orientation",
+      "focus": "Security, advanced architecture, and real-world system implementation",
       "subjects": [
         {
           "name": "Cryptography & Information Security",
-          "context": "Symmetric/asymmetric encryption, hashing, digital signatures, authentication, and network security protocols."
+          "context": "Symmetric/asymmetric encryption, hashing, digital signatures, authentication, and network security protocols.",
+          "key_topics": [
+            "AES/DES",
+            "RSA Algorithm",
+            "Elliptic Curve Cryptography",
+            "TLS/SSL"
+          ],
+          "textbook": "Cryptography and Network Security by William Stallings",
+          "difficulty": "High"
         },
         {
-          "name": "Advanced Software Engineering",
-          "context": "Software architecture, design patterns, project management, and quality assurance."
-        },
-        {
-          "name": "Electives",
-          "context": "Specialized domains such as AI, data science, distributed systems, or other emerging technologies."
-        },
-        {
-          "name": "Humanities Elective",
-          "context": "Ethics, intellectual property rights, and professional responsibility."
-        },
-        {
-          "name": "Project / Internship",
-          "context": "Real-world problem solving, system design, implementation, and documentation."
+          "name": "Project Phase I",
+          "context": "Initial system design, requirement gathering, and architectural planning for a capstone implementation.",
+          "key_topics": [
+            "System Architecture",
+            "Feasibility Study",
+            "Tech Stack Selection"
+          ],
+          "difficulty": "Variable"
         }
       ]
     },
-
     "Semester_8": {
-      "focus": "Specialization and independent project work",
+      "focus": "Final system delivery and specialized open electives",
       "subjects": [
         {
-          "name": "Program Electives",
-          "context": "Advanced topics such as cryptography, natural language processing, and parallel computing."
-        },
-        {
-          "name": "Advanced Electives",
-          "context": "Emerging areas including big data analytics, computer vision, and deep learning."
-        },
-        {
-          "name": "Open Electives",
-          "context": "Interdisciplinary subjects such as AI, IoT, quantum computing, and soft computing."
+          "name": "Distributed Systems",
+          "key_topics": [
+            "Consistency",
+            "Fault Tolerance",
+            "RPC"
+          ],
+          "textbook": "Distributed Systems by Tanenbaum"
         },
         {
           "name": "Major Project",
-          "context": "Capstone project involving design, development, and evaluation of a complete system."
+          "context": "Capstone project involving design, development, and evaluation of a complete system.",
+          "key_topics": [
+            "Integration Testing",
+            "Deployment",
+            "Documentation",
+            "Performance Profiling"
+          ],
+          "system_track": true,
+          "difficulty": "High"
         }
       ]
     }

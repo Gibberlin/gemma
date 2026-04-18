@@ -1,26 +1,138 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background-image: url("/images/background.png");
+
+  /* Surface & foundation */
+  --app-bg: #f1f3f4;
+  --surface: #ffffff;
+
+  /* Typography */
+  --text-primary: #202124;
+  --text-secondary: #4b4b4b;
+
+  /* Controls */
+  --border: #dadce0;
+  --divider: #f1f3f4;
+
+  /* Navigation & primary actions */
+  --primary: #4285f4;
+  --primary-weak: #d2e3fc;
+  --primary-strong: #174ea6;
+  --fab: #ea4335;
+
+  /* Semantic */
+  --success: #34a853;
+  --success-weak: #ceead6;
+  --danger: #a50e0e;
+  --danger-weak: #fad2cf;
+  --warning: #e37400;
+  --warning-weak: #feefc3;
+  --highlight: #fbbc04;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--app-bg);
+  --color-surface: var(--surface);
+
+  --color-foreground: var(--text-secondary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  --color-border: var(--border);
+  --color-divider: var(--divider);
+
+  --color-primary: var(--primary);
+  --color-primary-weak: var(--primary-weak);
+  --color-primary-strong: var(--primary-strong);
+  --color-fab: var(--fab);
+
+  --color-success: var(--success);
+  --color-success-weak: var(--success-weak);
+  --color-danger: var(--danger);
+  --color-danger-weak: var(--danger-weak);
+  --color-warning: var(--warning);
+  --color-warning-weak: var(--warning-weak);
+  --color-highlight: var(--highlight);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", "Liberation Sans", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--app-bg);
+  background-image: linear-gradient(
+      rgba(241, 243, 244, 0.78),
+      rgba(241, 243, 244, 0.78)
+    ),
+    var(--background-image);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: fixed, fixed;
+  color: var(--text-secondary);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    "Noto Sans", "Liberation Sans", sans-serif;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  strong,
+  b {
+    color: var(--text-primary);
+  }
+
+  a {
+    color: var(--primary-strong);
+  }
+
+  a:hover {
+    color: var(--primary);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl bg-surface border border-border shadow-sm;
+  }
+
+  .card-hover {
+    @apply transition-colors transition-shadow hover:bg-background hover:shadow-md;
+  }
+
+  .divider {
+    @apply border-t border-divider;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-2xl bg-primary px-5 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-strong disabled:opacity-50;
+  }
+
+  .input {
+    @apply w-full rounded-2xl border border-divider bg-surface px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-foreground placeholder:opacity-80 focus:border-primary;
+  }
 }

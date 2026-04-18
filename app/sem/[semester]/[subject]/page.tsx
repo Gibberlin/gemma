@@ -49,8 +49,8 @@ export default function SubjectHomePage() {
   const subjectBase = `/sem/${encodeURIComponent(semesterKey)}/${encodeURIComponent(subjectName)}`;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-3xl px-4 py-8">
+    <div className="min-h-screen bg-transparent text-foreground">
+      <div className="mx-auto w-full max-w-3xl px-6 py-10">
         <header className="mb-6">
           <div className="mb-2 flex items-center gap-3">
             <Link
@@ -69,35 +69,29 @@ export default function SubjectHomePage() {
         </header>
 
         {error ? (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">
+          <div className="mb-4 rounded-2xl border border-danger bg-danger-weak p-4 text-sm text-danger">
             {error}
           </div>
         ) : null}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Link
-            href={`${subjectBase}/materials`}
-            className="rounded-xl border border-black/10 dark:border-white/15 p-5 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-          >
-            <div className="font-medium">Materials</div>
-            <div className="text-sm opacity-70">
+          <Link href={`${subjectBase}/materials`} className="card card-hover p-6">
+            <div className="font-medium text-text-primary">Materials</div>
+            <div className="mt-1 text-sm opacity-80">
               PDFs and module references from `public/materials.json`.
             </div>
           </Link>
 
-          <Link
-            href={`${subjectBase}/qa`}
-            className="rounded-xl border border-black/10 dark:border-white/15 p-5 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-          >
-            <div className="font-medium">Subject Q&amp;A</div>
-            <div className="text-sm opacity-70">
+          <Link href={`${subjectBase}/qa`} className="card card-hover p-6">
+            <div className="font-medium text-text-primary">Subject Q&amp;A</div>
+            <div className="mt-1 text-sm opacity-80">
               Chat with subject-specific context from `public/courses.json`.
             </div>
           </Link>
         </div>
 
         {!isLoading && (!semester || !subject) ? (
-          <div className="mt-4 rounded-xl border border-black/10 dark:border-white/15 p-4 text-sm opacity-70">
+          <div className="card mt-4 p-6 text-sm opacity-80">
             This subject/semester pair wasn’t found in `public/courses.json` (links still work if you want to add it).
           </div>
         ) : null}
@@ -105,4 +99,3 @@ export default function SubjectHomePage() {
     </div>
   );
 }
-

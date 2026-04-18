@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
@@ -34,9 +34,11 @@ export type ChatMessage = {
 };
 
 export default function ChatPanel({
+  header,
   system,
   placeholder = "Ask a question…",
 }: {
+  header?: React.ReactNode;
   system: string;
   placeholder?: string;
 }) {
@@ -46,6 +48,34 @@ export default function ChatPanel({
   const [error, setError] = useState<string | null>(null);
 
   const listRef = useRef<HTMLDivElement | null>(null);
+  const shouldAutoScrollRef = useRef(true);
+
+  function scrollToBottom(behavior: ScrollBehavior = "smooth") {
+    const el = listRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
+  }
+
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+
+    function onScroll() {
+      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
+      shouldAutoScrollRef.current = remaining < 96;
+    }
+
+    onScroll();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldAutoScrollRef.current) return;
+    scrollToBottom("smooth");
+  }, [messages.length, isSending]);
 
   const canSend = useMemo(
     () => !isSending && input.trim().length > 0,
@@ -66,12 +96,7 @@ export default function ChatPanel({
     setMessages(nextMessages);
     setIsSending(true);
 
-    requestAnimationFrame(() => {
-      listRef.current?.scrollTo({
-        top: listRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    });
+    requestAnimationFrame(() => scrollToBottom("smooth"));
 
     try {
       const res = await fetch("/api/chat", {
@@ -91,12 +116,7 @@ export default function ChatPanel({
         { role: "assistant", content: json.content || "" },
       ]);
 
-      requestAnimationFrame(() => {
-        listRef.current?.scrollTo({
-          top: listRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      });
+      requestAnimationFrame(() => scrollToBottom("smooth"));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Request failed");
     } finally {
@@ -105,8 +125,17 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="rounded-xl border border-black/10 dark:border-white/15">
-      <div ref={listRef} className="h-[52vh] overflow-auto p-4 space-y-3">
+    <div className="card flex h-full flex-col overflow-hidden">
+      {header ? (
+        <div className="shrink-0 border-b border-divider px-6 py-4">
+          {header}
+        </div>
+      ) : null}
+
+      <div
+        ref={listRef}
+        className="flex-1 min-h-0 overflow-y-auto scroll-smooth p-6 space-y-6"
+      >
         {messages.length === 0 ? (
           <div className="text-sm opacity-70">
             Ask anything about the syllabus/topics for this subject.
@@ -120,12 +149,12 @@ export default function ChatPanel({
               <div
                 className={
                   m.role === "user"
-                    ? "max-w-[85%] rounded-2xl bg-black text-white dark:bg-white dark:text-black px-4 py-2 text-sm whitespace-pre-wrap"
-                    : "max-w-[85%] rounded-2xl bg-black/5 dark:bg-white/10 px-4 py-2 text-sm whitespace-pre-wrap"
+                    ? "w-fit max-w-[85%] md:max-w-3xl rounded-2xl bg-primary text-white px-4 py-3 text-sm whitespace-pre-wrap break-words shadow-sm"
+                    : "w-fit max-w-[85%] md:max-w-3xl rounded-2xl bg-background border border-divider px-4 py-3 text-sm shadow-sm"
                 }
               >
                 {m.role === "assistant" ? (
-                  <div className="break-words whitespace-normal [&_p]:m-0 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 [&_pre]:my-2 [&_pre]:overflow-auto [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-black/15 dark:[&_blockquote]:border-white/20 [&_blockquote]:pl-3 [&_blockquote]:opacity-90 [&_table]:my-2 [&_table]:w-full [&_table]:text-left [&_th]:border [&_th]:border-black/10 dark:[&_th]:border-white/15 [&_th]:px-2 [&_th]:py-1 [&_td]:border [&_td]:border-black/10 dark:[&_td]:border-white/15 [&_td]:px-2 [&_td]:py-1 [&_.katex-display]:my-2 [&_.katex-display]:overflow-auto [&_.footnotes]:mt-4 [&_.footnotes]:text-xs [&_.footnotes]:opacity-80 [&_.footnotes_hr]:my-3 [&_.footnotes_ol]:pl-5 [&_sup]:text-xs [&_sup>a]:no-underline">
+                  <div className="prose prose-slate max-w-none leading-relaxed prose-headings:font-semibold prose-p:my-3 prose-p:text-slate-700 prose-a:underline prose-a:underline-offset-4 prose-pre:my-3 prose-pre:overflow-x-auto prose-table:my-3 prose-hr:border-divider">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
                       rehypePlugins={[rehypeKatex]}
@@ -160,7 +189,7 @@ export default function ChatPanel({
                           return (
                             <code
                               {...props}
-                              className="rounded bg-black/10 dark:bg-white/10 px-1 py-0.5"
+                              className="rounded bg-surface px-1 py-0.5 text-sm font-mono"
                             >
                               {children}
                             </code>
@@ -172,7 +201,7 @@ export default function ChatPanel({
                     </ReactMarkdown>
                   </div>
                 ) : (
-                  m.content
+                  <div className="whitespace-pre-wrap break-words">{m.content}</div>
                 )}
               </div>
             </div>
@@ -181,23 +210,23 @@ export default function ChatPanel({
 
         {isSending ? (
           <div className="flex justify-start">
-            <div className="max-w-[85%] rounded-2xl bg-black/5 dark:bg-white/10 px-4 py-2 text-sm">
+            <div className="w-fit max-w-[85%] md:max-w-3xl rounded-2xl bg-background border border-divider px-4 py-3 text-sm animate-pulse shadow-sm">
               <ThinkingDots />
             </div>
           </div>
         ) : null}
       </div>
 
-      <div className="border-t border-black/10 dark:border-white/15 p-3">
+      <div className="divider shrink-0 p-4 bg-surface/80 backdrop-blur">
         {error ? (
-          <div className="mb-2 text-sm text-red-600 dark:text-red-400">
+          <div className="mb-3 text-sm text-danger">
             {error}
           </div>
         ) : null}
 
         <div className="flex gap-2">
           <textarea
-            className="flex-1 resize-none rounded-lg border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20"
+            className="input flex-1 resize-none"
             rows={2}
             placeholder={placeholder}
             value={input}
@@ -211,7 +240,7 @@ export default function ChatPanel({
           />
           <button
             type="button"
-            className="h-[44px] rounded-lg bg-foreground text-background px-4 text-sm font-medium disabled:opacity-50"
+            className="btn-primary h-[48px] px-5"
             onClick={() => void send()}
             disabled={!canSend}
           >

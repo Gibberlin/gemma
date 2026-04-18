@@ -1,134 +1,205 @@
 {
-  "description": "Routing map for ASTU CSE syllabus PDFs and sources (Semester 3 to 8)",
+  "description": "Routing map for ASTU CSE syllabus PDFs, digital resources, and open-source books",
   "base_source": "https://astu.ac.in/?page_id=4697",
-
   "semesters": {
+    "Bridge_Courses": {
+      "pdf": null,
+      "subjects": {
+        "Advanced Engineering Calculus & Matrices": {
+          "module_ref": "Engineering Math Prep",
+          "youtube": "https://www.youtube.com/playlist?list=PLU6SqdYcYsfKInH-R6mF55fG_rAtuS7Tf",
+          "provider": "Gajendra Purohit"
+        },
+        "C Programming Deep Dive": {
+          "module_ref": "C Programming Core",
+          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRggZZgYpPMUxdY1CYkZtARR",
+          "provider": "Neso Academy"
+        }
+      }
+    },
     "Semester_3": {
       "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
       "subjects": {
         "Mathematics III": {
           "module_ref": "Engineering Mathematics",
-          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf"
-        },
-        "Object Oriented Programming (C++)": {
-          "module_ref": "OOP Concepts",
-          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf"
-        },
-        "Digital Systems": {
-          "module_ref": "Digital Logic Design",
-          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf"
+          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLU6SqdYcYsfKInH-R6mF55fG_rAtuS7Tf",
+          "provider": "Gajendra Purohit"
         },
         "Data Structures & Algorithms": {
           "module_ref": "DSA Core",
-          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf"
+          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PL2_aWCzGMAwI3W_JlcBbtYTwiQSsOTtf6",
+          "provider": "Abdul Bari",
+          "interactive": "https://visualgo.net/"
         },
-        "Signals & Systems": {
-          "module_ref": "Signals Processing Basics",
-          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf"
+        "Digital Systems": {
+          "module_ref": "Digital Logic Design",
+          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRjMH3mWf6kwqiTbT798eAOm",
+          "provider": "Neso Academy"
+        },
+        "Object Oriented Programming (C++)": {
+          "module_ref": "OOP Concepts",
+          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLVlQHNRLflT8igJeRdK1hAtyH_sY1P7O6",
+          "provider": "Saurabh Shukla"
         }
       }
     },
-
     "Semester_4": {
       "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
       "subjects": {
-        "Numerical Methods": {
-          "module_ref": "Numerical Computation",
-          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf"
-        },
-        "Graph Theory": {
-          "module_ref": "Graph Algorithms",
-          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf"
-        },
         "Operating Systems": {
           "module_ref": "OS Core",
-          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf"
+          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiGz9donHRrE9I3Mwn6XdP8p",
+          "provider": "Gate Smashers",
+          "pdf_source": "https://codex.cs.yale.edu/os-book/OS10/slide-dir/index.html"
         },
         "Computer Organization & Architecture": {
           "module_ref": "COA",
-          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf"
+          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgLLlzdgiTUKULKJPYc0A4q",
+          "provider": "Neso Academy"
         },
-        "Programming Languages": {
-          "module_ref": "Language Theory",
-          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf"
+        "Graph Theory": {
+          "module_ref": "Graph Algorithms",
+          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiEcw2jS8x8vMv0f2G0G2Nbx",
+          "provider": "Gate Smashers"
         }
       }
     },
-
     "Semester_5": {
       "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
       "subjects": {
-        "Probability & Random Processes": {
-          "module_ref": "Probability Theory",
-          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf"
-        },
-        "Formal Language & Automata Theory": {
-          "module_ref": "Automata",
-          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf"
-        },
-        "Computer Graphics": {
-          "module_ref": "Graphics Pipeline",
-          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf"
+        "Microprocessor & Microcontroller": {
+          "module_ref": "Microprocessor Architecture",
+          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgLLlzdgiTUKULKJPYc0A4q",
+          "provider": "Neso Academy"
         },
         "Database Management Systems": {
           "module_ref": "DBMS Core",
-          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf"
+          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8KuIsVinIdslYw5OD",
+          "provider": "Gate Smashers",
+          "interactive": "https://sqlbolt.com/"
         },
-        "Microprocessor & Microcontroller": {
-          "module_ref": "Microprocessor Architecture",
-          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf"
+        "Formal Language & Automata Theory": {
+          "module_ref": "Automata",
+          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgp46KUv4ZY69yXmpwKOIev",
+          "provider": "Neso Academy"
         }
       }
     },
-
     "Semester_6": {
       "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
       "subjects": {
-        "Computer Networks": {
-          "module_ref": "Networking",
-          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf"
-        },
-        "Software Engineering": {
-          "module_ref": "SDLC",
-          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf"
-        },
         "Compiler Design": {
           "module_ref": "Compilers",
-          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf"
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRj6noJV_Z8U6XNIn7isUo4m",
+          "provider": "Neso Academy"
+        },
+        "Computer Networks": {
+          "module_ref": "Networking",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiGFBD2-2joCpWOLUrDLvVV_",
+          "provider": "Gate Smashers"
         }
       }
     },
-
     "Semester_7": {
       "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
       "subjects": {
         "Cryptography & Information Security": {
           "module_ref": "Security",
-          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf"
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgJD7Gk7yv3VvXvT9EId3M5",
+          "provider": "Neso Academy"
         },
-        "Electives": {
-          "module_ref": "Specialization",
+        "Project Phase I": {
+          "module_ref": "Capstone Design",
           "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf"
         }
       }
     },
-
     "Semester_8": {
       "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
       "subjects": {
-        "Program Electives": {
-          "module_ref": "Advanced Topics",
-          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf"
-        },
-        "Open Electives": {
-          "module_ref": "Interdisciplinary",
+        "Distributed Systems": {
+          "module_ref": "Advanced Architecture",
           "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf"
         },
         "Major Project": {
-          "module_ref": "Capstone",
+          "module_ref": "Capstone Implementation",
           "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf"
         }
       }
     }
+  },
+  "books_directory": {
+    "Systems_and_Hardware": [
+      {
+        "title": "Operating Systems: Three Easy Pieces (OSTEP)",
+        "authors": "Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau",
+        "read_online_link": "https://pages.cs.wisc.edu/~remzi/OSTEP/",
+        "description": "The absolute best modern, free online textbook for understanding operating systems, virtualization, concurrency, and persistence.",
+        "target_subjects": ["Operating Systems"]
+      },
+      {
+        "title": "Beej's Guide to Network Programming",
+        "authors": "Brian 'Beej Jorgensen' Hall",
+        "read_online_link": "https://beej.us/guide/bgnet/",
+        "description": "A classic, highly readable guide to C sockets and network programming.",
+        "target_subjects": ["Computer Networks"]
+      }
+    ],
+    "Core_Computer_Science": [
+      {
+        "title": "Structure and Interpretation of Computer Programs (SICP)",
+        "authors": "Harold Abelson and Gerald Jay Sussman",
+        "read_online_link": "https://mitpress.mit.edu/sites/default/files/sicp/index.html",
+        "description": "A foundational text for understanding the deep mechanics of programming languages and program execution.",
+        "target_subjects": ["Compiler Design"]
+      },
+      {
+        "title": "Open Data Structures",
+        "authors": "Pat Morin",
+        "read_online_link": "https://opendatastructures.org/",
+        "description": "A comprehensive, free textbook covering all fundamental data structures with code examples in C++ and Java.",
+        "target_subjects": ["Data Structures & Algorithms"]
+      }
+    ],
+    "Compilers_and_Languages": [
+      {
+        "title": "Crafting Interpreters",
+        "authors": "Robert Nystrom",
+        "read_online_link": "https://craftinginterpreters.com/",
+        "description": "An incredible, free online book that walks you through building a programming language from scratch in Java and C.",
+        "target_subjects": ["Compiler Design"]
+      }
+    ],
+    "Databases_and_Distributed_Systems": [
+      {
+        "title": "Database Design - 2nd Edition",
+        "authors": "Adrienne Watt",
+        "read_online_link": "https://opentextbc.ca/dbdesign01/",
+        "description": "An open-source textbook covering the fundamentals of database architecture, normalization, and SQL.",
+        "target_subjects": ["Database Management Systems"]
+      }
+    ]
+  },
+  "global_libraries": {
+    "ebooks": "https://libgen.is",
+    "courseware": "https://nptel.ac.in/courses",
+    "documentation": "https://devdocs.io/",
+    "ebook_search_engines": [
+      "https://archive.org/ (Internet Archive - Open Library)",
+      "https://libgen.is/ (Library Genesis)"
+    ]
   }
 }

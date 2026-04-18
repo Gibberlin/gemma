@@ -46,8 +46,8 @@ export default function SemesterPage() {
   }, [semester]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-3xl px-4 py-8">
+    <div className="min-h-screen bg-transparent text-foreground">
+      <div className="mx-auto w-full max-w-3xl px-6 py-10">
         <header className="mb-6">
           <div className="mb-2">
             <Link href="/" className="text-sm opacity-80 hover:opacity-100">
@@ -61,13 +61,13 @@ export default function SemesterPage() {
         </header>
 
         {error ? (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-300">
+          <div className="mb-4 rounded-2xl border border-danger bg-danger-weak p-4 text-sm text-danger">
             {error}
           </div>
         ) : null}
 
-        <div className="rounded-xl border border-black/10 dark:border-white/15 p-4">
-          <h2 className="text-sm font-medium mb-3">Subjects</h2>
+        <div className="card p-6">
+          <h2 className="mb-4 text-sm font-medium text-text-primary">Subjects</h2>
           {isLoading ? (
             <div className="text-sm opacity-70">Loading…</div>
           ) : !semester ? (
@@ -82,10 +82,10 @@ export default function SemesterPage() {
                 <Link
                   key={s.name}
                   href={`/sem/${encodeURIComponent(semesterKey)}/${encodeURIComponent(s.name)}`}
-                  className="block rounded-xl border border-black/10 dark:border-white/15 p-4 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+                  className="card card-hover block p-6"
                 >
-                  <div className="font-medium">{s.name}</div>
-                  <div className="text-sm opacity-70">{s.context ?? "Open subject"}</div>
+                  <div className="font-medium text-text-primary">{s.name}</div>
+                  <div className="mt-1 text-sm opacity-80">{s.context ?? "Open subject"}</div>
                 </Link>
               ))}
             </div>
@@ -95,4 +95,3 @@ export default function SemesterPage() {
     </div>
   );
 }
-
