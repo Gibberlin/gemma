@@ -69,6 +69,10 @@ export async function POST(req: Request) {
       return Response.json({ content: response.text });
     }
 
+    if (!serverEnv.lmStudioBaseUrl || !serverEnv.lmStudioModel) {
+      return Response.json({ error: "LMSTUDIO_API_BASE_URL and LMSTUDIO_MODEL must be configured on the server." }, { status: 500 });
+    }
+
     const content = await lmStudioChat(messages, {
       baseUrl: serverEnv.lmStudioBaseUrl,
       apiKey: serverEnv.lmStudioApiKey,
