@@ -48,7 +48,10 @@ export async function POST(req: Request) {
         return Response.json({ error: "GEMINI_API_KEY is not configured on the server." }, { status: 500 });
       }
 
-      const ai = new GoogleGenAI({ apiKey: serverEnv.geminiApiKey });
+      const ai = new GoogleGenAI({ 
+        apiKey: serverEnv.geminiApiKey,
+        httpOptions: { apiVersion: 'v1' }
+      });
       
       const systemInstruction = body.system?.trim();
       const chatMessages = messages.filter(m => m.role !== 'system');

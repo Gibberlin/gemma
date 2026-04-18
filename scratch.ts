@@ -1,10 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
-import * as dotenv from "dotenv";
+import * as fs from "fs";
 
-dotenv.config({ path: ".env.local" });
+const env = fs.readFileSync(".env", "utf8");
+const match = env.match(/GEMINI_API_KEY=(.*)/);
+const apiKey = match ? match[1].trim() : process.env.GEMINI_API_KEY;
 
 async function listModels() {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.list();
   
   for await (const model of response) {
