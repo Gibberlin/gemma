@@ -61,6 +61,7 @@ export default function ChatPanel({
     if (!el) return;
 
     function onScroll() {
+      if (!el) return;
       const remaining = el.scrollHeight - el.scrollTop - el.clientHeight;
       shouldAutoScrollRef.current = remaining < 96;
     }
@@ -162,7 +163,7 @@ export default function ChatPanel({
                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
                         em: ({ node, ...props }) => <strong {...props} />,
                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        code: ({ node, className, children, ...props }) => {
+                        code: ({ node, className, children, ref: _ref, ...props }) => {
                           const match = /language-(\w+)/.exec(className || "");
 
                           if (match) {

@@ -5,7 +5,7 @@ import { decodeParam, semesterSortKey, type CoursesJson } from "@/lib/catalog";
 
 type LayoutProps = {
   children: React.ReactNode;
-  params: Record<string, string | string[] | undefined>;
+  params: Promise<{ semester?: string | string[] }>;
 };
 
 async function loadSemesters(): Promise<string[]> {
@@ -22,7 +22,8 @@ async function loadSemesters(): Promise<string[]> {
 
 export default async function SemLayout({ children, params }: LayoutProps) {
   const semesters = await loadSemesters();
-  const currentSemester = params.semester ? decodeParam(params.semester) : null;
+  const resolvedParams = await params;
+  const currentSemester = resolvedParams.semester ? decodeParam(resolvedParams.semester) : null;
 
   return (
     <SemShell semesters={semesters} currentSemester={currentSemester}>

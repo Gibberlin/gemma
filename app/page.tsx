@@ -45,7 +45,7 @@ export default function Home() {
       <div className="mx-auto w-full max-w-3xl px-6 py-10">
         <header className="mb-6 h-34">
           <h1 className="text-5xl font-semibold tracking-tight">
-            BVEC Study Hub
+            Gemma Study Companion 🤖
           </h1>
           <p className="text-3xl opacity-80">
             Choose a semester, then pick a subject.
