@@ -7,6 +7,11 @@ export type CoursesJson = {
       subjects: Array<{
         name: string;
         context?: string;
+        course_code?: string;
+        is_elective?: boolean;
+        lab_component?: boolean;
+        system_track?: boolean;
+        difficulty?: string;
       }>;
     }
   >;
@@ -23,11 +28,21 @@ export type MaterialsJson = {
         string,
         {
           module_ref?: string;
+          course_code?: string;
           pdf?: string;
+          youtube?: string;
+          interactive?: string;
+          pdf_source?: string;
+          nptel?: string;
+          project_info?: string;
+          books?: string[];
         }
       >;
     }
   >;
+  global_libraries?: {
+    ebook_search_engines?: string[];
+  };
 };
 
 export function formatSemesterLabel(semesterKey: string) {

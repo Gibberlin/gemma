@@ -1,5 +1,5 @@
 {
-  "system_role": "You are an academic assistant trained on the ASTU CSE syllabus. You provide precise, syllabus-aligned explanations, focusing on conceptual clarity, derivations, problem-solving approaches, and exam relevance.",
+  "system_role": "You are an academic assistant trained on the official ASTU CSE syllabus. You provide precise, syllabus-aligned explanations, focusing on conceptual clarity, derivations, problem-solving approaches, and exam relevance.",
   "CSE_Syllabus_ASTU": {
     "Bridge_Courses": {
       "focus": "Essential mathematical and programmatic foundations for transition into degree-level engineering.",
@@ -7,253 +7,92 @@
         {
           "name": "Advanced Engineering Calculus & Matrices",
           "context": "Fills the gap between diploma-level math and the rigorous Mathematics III requirements.",
-          "key_topics": [
-            "Differential Equations",
-            "Matrix Eigenvalues",
-            "Vector Calculus"
-          ],
+          "key_topics": ["Differential Equations", "Matrix Eigenvalues", "Vector Calculus"],
           "difficulty": "High"
         },
         {
           "name": "C Programming Deep Dive",
           "context": "Essential prerequisite for DSA and Object-Oriented Programming.",
-          "key_topics": [
-            "Pointers",
-            "Memory Allocation (malloc/free)",
-            "Structs"
-          ],
+          "key_topics": ["Pointers", "Memory Allocation (malloc/free)", "Structs"],
           "difficulty": "Medium"
         }
       ]
     },
     "Semester_3": {
-      "focus": "Introduction to core computing, programming paradigms, and digital logic fundamentals",
+      "focus": "Introduction to core computing, programming paradigms, and digital logic fundamentals.",
       "subjects": [
-        {
-          "name": "Mathematics III",
-          "key_topics": [
-            "Linear Algebra",
-            "Laplace Transforms",
-            "Fourier Series"
-          ],
-          "textbook": "Higher Engineering Mathematics by B.S. Grewal",
-          "importance": "High (Foundation for Signals)"
-        },
-        {
-          "name": "Data Structures & Algorithms",
-          "context": "Arrays, linked lists, stacks, queues, trees, graphs, sorting and searching algorithms with time and space complexity analysis.",
-          "key_topics": [
-            "Binary Search Trees",
-            "Asymptotic Notation",
-            "Graph Traversals (BFS/DFS)"
-          ],
-          "textbook": "Fundamentals of Data Structures in C++ by Horowitz & Sahni",
-          "prerequisites": [
-            "C Programming Deep Dive"
-          ],
-          "difficulty": "High",
-          "lab_component": true
-        },
-        {
-          "name": "Digital Systems",
-          "context": "Boolean algebra, logic gates, combinational and sequential circuits, minimization techniques, and digital circuit design.",
-          "key_topics": [
-            "K-Maps",
-            "Multiplexers",
-            "Flip-Flops",
-            "State Machines"
-          ],
-          "textbook": "Digital Design by M. Morris Mano",
-          "difficulty": "Medium",
-          "lab_component": true
-        },
-        {
-          "name": "Object Oriented Programming (C++)",
-          "key_topics": [
-            "Classes",
-            "Polymorphism",
-            "Inheritance",
-            "Operator Overloading"
-          ],
-          "textbook": "Object Oriented Programming with C++ by E. Balagurusamy"
-        }
+        { "name": "Mathematics III", "course_code": "MA131301", "context": "Partial differential equations, Complex Analysis, Probability and Laplace Transforms." },
+        { "name": "Discrete Mathematics", "course_code": "MA131302", "context": "Set theory, Relations, Mathematical Logic, Algebraic structures, Combinatorics." },
+        { "name": "Object Oriented Programming in C++", "course_code": "CS131303", "context": "Classes, Objects, Inheritance, Polymorphism, Templates, Exception Handling.", "lab_component": true },
+        { "name": "Digital Systems", "course_code": "ET131304", "context": "Boolean algebra, Combinational logic, Sequential circuits.", "system_track": true, "lab_component": true },
+        { "name": "Data Structure and Algorithms", "course_code": "CS131305", "context": "Arrays, Linked Lists, Stacks, Queues, Trees, Graphs, Sorting, and Searching.", "difficulty": "High", "lab_component": true }
       ]
     },
     "Semester_4": {
-      "focus": "Understanding system-level design and interaction between hardware and software",
+      "focus": "Understanding system-level design and interaction between hardware and software.",
       "subjects": [
-        {
-          "name": "Operating Systems",
-          "context": "Process management, CPU scheduling, deadlocks, memory management, file systems, and synchronization mechanisms.",
-          "key_topics": [
-            "Kernel Architecture",
-            "Concurrency",
-            "Paging & Segmentation",
-            "File System Implementation"
-          ],
-          "textbook": "Operating System Concepts by Silberschatz & Galvin",
-          "system_track": true,
-          "difficulty": "High",
-          "lab_component": true
-        },
-        {
-          "name": "Computer Organization & Architecture",
-          "context": "Instruction sets, CPU organization, memory hierarchy, I/O systems, and performance evaluation.",
-          "key_topics": [
-            "Von Neumann Model",
-            "Pipelining Hazards",
-            "Cache Coherence",
-            "Assembly Basics"
-          ],
-          "textbook": "Computer System Architecture by M. Morris Mano",
-          "system_track": true,
-          "difficulty": "High"
-        },
-        {
-          "name": "Graph Theory",
-          "key_topics": [
-            "Eulerian Paths",
-            "Planarity",
-            "Coloring"
-          ],
-          "textbook": "Graph Theory by Narsingh Deo"
-        }
+        { "name": "Computer Organization and Architecture", "course_code": "CSE181402", "context": "CPU architecture, x86 instruction set, Pipelining, Memory Hierarchy.", "system_track": true, "difficulty": "High" },
+        { "name": "Operating System", "course_code": "CSE181403", "context": "Process scheduling, IPC, Deadlocks, Virtual Memory, and Device drivers.", "system_track": true, "difficulty": "High", "lab_component": true },
+        { "name": "JAVA Programming", "course_code": "CSE181404", "context": "Control structures, JAVA AWT Package, Threads, Networking in Java, and JDBC." },
+        { "name": "Graph Theory", "course_code": "CSE181405", "context": "Trees, Connectivity, Eulerian/Hamiltonian graphs, and Planarity." }
       ]
     },
     "Semester_5": {
-      "focus": "Development of theoretical foundations and core hardware/software components",
+      "focus": "Development of theoretical foundations and core hardware/software components.",
       "subjects": [
-        {
-          "name": "Microprocessor & Microcontroller",
-          "context": "Architecture, instruction sets, assembly programming, interfacing, and embedded system basics.",
-          "key_topics": [
-            "8086 Architecture",
-            "Interrupts",
-            "DMA",
-            "Peripheral Interfacing"
-          ],
-          "textbook": "Microprocessor Architecture by Ramesh Gaonkar",
-          "system_track": true,
-          "difficulty": "High",
-          "lab_component": true
-        },
-        {
-          "name": "Database Management Systems",
-          "context": "Relational model, SQL, normalization, indexing, transactions, concurrency control, and recovery.",
-          "key_topics": [
-            "ACID Properties",
-            "B+ Trees",
-            "Query Optimization",
-            "Normal Forms"
-          ],
-          "textbook": "Database System Concepts by Korth & Silberschatz",
-          "difficulty": "Medium-High",
-          "lab_component": true
-        },
-        {
-          "name": "Formal Language & Automata Theory",
-          "context": "Regular expressions, DFA/NFA, context-free grammars, pushdown automata, and Turing machines.",
-          "key_topics": [
-            "Chomsky Hierarchy",
-            "Pumping Lemma",
-            "Decidability"
-          ],
-          "textbook": "Introduction to Automata Theory by Hopcroft & Ullman",
-          "prerequisites": [
-            "Data Structures & Algorithms"
-          ],
-          "difficulty": "High"
-        }
+        { "name": "Database Management System", "course_code": "CSE181501", "context": "Relational Query Languages, Database Design, Storage Strategies, and Transaction Processing.", "lab_component": true },
+        { "name": "Design and Analysis of Algorithm", "course_code": "CSE181502", "context": "Asymptotic analysis, Greedy, Dynamic Programming, Graph Algorithms.", "difficulty": "High" },
+        { "name": "Formal Language and Automata Theory", "course_code": "CSE181503", "context": "Finite Automata, Context-Free Grammars, Pushdown Automata, Turing Machines.", "difficulty": "High" },
+        { "name": "Microcontrollers and Applications", "course_code": "CSE1815PE11", "context": "8051 Architecture, Instruction Set, Memory expansion, External Communication (RS232, SPI, I2C).", "system_track": true, "difficulty": "High", "is_elective": true },
+        { "name": "Queuing Theory and Modelling", "course_code": "CSE1815PE12", "context": "Discrete event simulation, Markov Models, Queueing Networks.", "is_elective": true },
+        { "name": "Information Retrieval", "course_code": "CSE1815PE13", "context": "Search Engines, Boolean Retrieval, Vector Space Model, Text Classification.", "is_elective": true },
+        { "name": "Computer Graphics", "course_code": "CSE1815PE14", "context": "Raster scan devices, Line drawing algorithms, 3-D transformations.", "is_elective": true }
       ]
     },
     "Semester_6": {
-      "focus": "Advanced computing systems, network protocols, and software translation",
+      "focus": "Advanced computing systems, network protocols, and software translation.",
       "subjects": [
-        {
-          "name": "Compiler Design",
-          "context": "Lexical analysis, syntax parsing, semantic analysis, intermediate code generation, optimization, and code generation.",
-          "key_topics": [
-            "Abstract Syntax Trees",
-            "LR Parsing",
-            "Register Allocation",
-            "Code Optimization"
-          ],
-          "textbook": "Compilers: Principles, Techniques, and Tools by Aho & Ullman",
-          "system_track": true,
-          "prerequisites": [
-            "Formal Language & Automata Theory",
-            "C Programming Deep Dive"
-          ],
-          "difficulty": "High",
-          "lab_component": true
-        },
-        {
-          "name": "Computer Networks",
-          "context": "OSI and TCP/IP models, routing algorithms, congestion control, data link protocols, and network security basics.",
-          "key_topics": [
-            "TCP/UDP",
-            "Subnetting",
-            "BGP/OSPF",
-            "MAC Protocols"
-          ],
-          "textbook": "Data Communications and Networking by Behrouz A. Forouzan",
-          "system_track": true,
-          "difficulty": "Medium-High",
-          "lab_component": true
-        }
+        { "name": "Compiler Design", "course_code": "CSE181601", "context": "Lexical Analysis, Syntax Analysis, Semantic Analysis, Intermediate Code Gen.", "system_track": true, "difficulty": "High", "lab_component": true },
+        { "name": "Computer Networks", "course_code": "CSE181602", "context": "Data Link Layer, Network Layer (IPv4/v6), Transport Layer (TCP/UDP).", "system_track": true, "lab_component": true },
+        { "name": "Data Mining", "course_code": "CSE1816PE21", "context": "Association and Correlation Analysis, Clustering Algorithms, Classification.", "is_elective": true },
+        { "name": "Advanced Computer Architecture", "course_code": "CSE1816PE22", "context": "RISC vs CISC, Instruction Level Parallelism, Superscalar techniques.", "system_track": true, "difficulty": "High", "is_elective": true },
+        { "name": "Image Processing", "course_code": "CSE1816PE31", "context": "Spatial Domain Filtering, Filtering in Frequency Domain, Image Compression.", "is_elective": true },
+        { "name": "Ad hoc and Sensor Networks", "course_code": "CSE1816PE32", "context": "MAC Protocols for Ad Hoc Networks, WSN Routing, Localization.", "is_elective": true },
+        { "name": "Real Time Systems", "course_code": "CSE1816PE33", "context": "Real-Time Task Scheduling, Priority Ceiling Protocols, Real Time POSIX.", "system_track": true, "is_elective": true },
+        { "name": "Software Engineering", "course_code": "CSE1816OE11", "context": "Software Process, Requirements, Design Concepts, Testing.", "is_elective": true },
+        { "name": "Information Theory and Coding", "course_code": "CSE1816OE12", "context": "Entropy, Source coding, Channel capacity, Convolutional codes.", "is_elective": true },
+        { "name": "Fault Tolerant Computing", "course_code": "CSE1816OE13", "context": "Hardware Fault-Tolerance, Error Detection Codes, Resilient Structures.", "system_track": true, "is_elective": true },
+        { "name": "Mini Project", "course_code": "CSE181621", "context": "3 Credits (0-0-6). A project is to be done in groups. Guidelines and evaluation metrics will be issued by the university." }
       ]
     },
     "Semester_7": {
-      "focus": "Security, advanced architecture, and real-world system implementation",
+      "focus": "Security, advanced architecture, and real-world system implementation.",
       "subjects": [
-        {
-          "name": "Cryptography & Information Security",
-          "context": "Symmetric/asymmetric encryption, hashing, digital signatures, authentication, and network security protocols.",
-          "key_topics": [
-            "AES/DES",
-            "RSA Algorithm",
-            "Elliptic Curve Cryptography",
-            "TLS/SSL"
-          ],
-          "textbook": "Cryptography and Network Security by William Stallings",
-          "difficulty": "High"
-        },
-        {
-          "name": "Project Phase I",
-          "context": "Initial system design, requirement gathering, and architectural planning for a capstone implementation.",
-          "key_topics": [
-            "System Architecture",
-            "Feasibility Study",
-            "Tech Stack Selection"
-          ],
-          "difficulty": "Variable"
-        }
+        { "name": "Cloud Computing", "course_code": "CSE1817PE41", "context": "IAAS, PAAS, SAAS, Cloud collaborative applications.", "is_elective": true },
+        { "name": "Computational Complexity", "course_code": "CSE1817PE42", "context": "Turing machines, Time Complexity (P, NP), Space Complexity.", "is_elective": true },
+        { "name": "Principles of Programming Languages", "course_code": "CSE1817PE43", "context": "Syntax, Semantics, Concurrent Programming, Logic Programming.", "is_elective": true },
+        { "name": "Machine Learning", "course_code": "CSE1817OE21", "context": "Linear regression, Decision trees, Neural Networks, SVM.", "is_elective": true },
+        { "name": "Human Computer Interaction", "course_code": "CSE1817OE22", "context": "Usability, Cognitive models, Interaction Styles.", "is_elective": true },
+        { "name": "Computer Vision and its Applications", "course_code": "CSE1817OE23", "context": "Image sensors, Object Detection, optical flow.", "is_elective": true },
+        { "name": "Distributed Systems", "course_code": "CSE1817OE31", "context": "Logical clocks, Distributed Mutual Exclusion, RPC.", "system_track": true, "is_elective": true },
+        { "name": "Computational Geometry", "course_code": "CSE1817OE32", "context": "Convex hulls, Voronoi diagrams, Delaunay triangulations.", "is_elective": true },
+        { "name": "Embedded Systems", "course_code": "CSE1817OE33", "context": "ARM SoC, RTOS, Interfacing (UART, SPI, CAN bus), Hardware/Software Co-design.", "system_track": true, "difficulty": "High", "is_elective": true },
+        { "name": "Project-1", "course_code": "CSE181722", "context": "6 Credits (0-0-12). Initial system design, requirement gathering, and architectural planning for a capstone implementation." }
       ]
     },
     "Semester_8": {
-      "focus": "Final system delivery and specialized open electives",
+      "focus": "Final system delivery and specialized open electives.",
       "subjects": [
-        {
-          "name": "Distributed Systems",
-          "key_topics": [
-            "Consistency",
-            "Fault Tolerance",
-            "RPC"
-          ],
-          "textbook": "Distributed Systems by Tanenbaum"
-        },
-        {
-          "name": "Major Project",
-          "context": "Capstone project involving design, development, and evaluation of a complete system.",
-          "key_topics": [
-            "Integration Testing",
-            "Deployment",
-            "Documentation",
-            "Performance Profiling"
-          ],
-          "system_track": true,
-          "difficulty": "High"
-        }
+        { "name": "Cryptography and Network Security", "course_code": "CSE1818PE51", "context": "Symmetric Ciphers (DES), Public Key Encryption (RSA), IPSec.", "is_elective": true },
+        { "name": "Speech and Natural Language Processing", "course_code": "CSE1818PE52", "context": "Morphology, N-gram models, POS tagging, Parsing.", "is_elective": true },
+        { "name": "Parallel Computing", "course_code": "CSE1818PE53", "context": "Shared memory programming, MPI, GPU programming (CUDA).", "system_track": true, "is_elective": true },
+        { "name": "Big Data Analytics", "course_code": "CSE1818PE61", "context": "Hadoop, Spark, Graph Processing.", "is_elective": true },
+        { "name": "Neural Networks and Deep Learning", "course_code": "CSE1818PE63", "context": "Perceptrons, CNNs (AlexNet, ResNet), RNNs.", "is_elective": true },
+        { "name": "Artificial Intelligence", "course_code": "CSE1818OE41", "context": "State space search, Heuristics, Minimax, Predicate Logic.", "is_elective": true },
+        { "name": "Quantum Computing", "course_code": "CSE1818OE42", "context": "Qubits, Entanglement, Shor's algorithm, Grover search.", "is_elective": true },
+        { "name": "Internet of Things", "course_code": "CSE1818OE51", "context": "Sensors/Actuators, SDN for IoT, Fog Computing.", "is_elective": true },
+        { "name": "Electronic Design Automation", "course_code": "CSE1818OE53", "context": "VLSI design, HDLs (VERILOG/VHDL), System Verilog.", "system_track": true, "is_elective": true },
+        { "name": "Project-2", "course_code": "CSE181822", "context": "6 Credits (0-0-12). Capstone project involving design, development, and evaluation of a complete system." }
       ]
     }
   }

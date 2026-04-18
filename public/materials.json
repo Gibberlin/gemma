@@ -1,97 +1,163 @@
 {
-  "description": "Routing map for ASTU CSE syllabus PDFs, digital resources, and open-source books",
+  "description": "Routing map for ASTU CSE syllabus PDFs, digital resources, and recommended books",
   "base_source": "https://astu.ac.in/?page_id=4697",
   "semesters": {
-    "Bridge_Courses": {
-      "pdf": null,
-      "subjects": {
-        "Advanced Engineering Calculus & Matrices": {
-          "module_ref": "Engineering Math Prep",
-          "youtube": "https://www.youtube.com/playlist?list=PLU6SqdYcYsfKInH-R6mF55fG_rAtuS7Tf",
-          "provider": "Gajendra Purohit"
-        },
-        "C Programming Deep Dive": {
-          "module_ref": "C Programming Core",
-          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRggZZgYpPMUxdY1CYkZtARR",
-          "provider": "Neso Academy"
-        }
-      }
-    },
     "Semester_3": {
       "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
       "subjects": {
         "Mathematics III": {
-          "module_ref": "Engineering Mathematics",
+          "course_code": "MA131301",
           "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLU6SqdYcYsfKInH-R6mF55fG_rAtuS7Tf",
-          "provider": "Gajendra Purohit"
+          "youtube": "https://www.youtube.com/results?search_query=Mathematics+III+engineering",
+          "nptel": "https://nptel.ac.in/courses/111105123",
+          "books": [
+            "Advanced Engineering Mathematics by E. Kreyszig"
+          ]
         },
-        "Data Structures & Algorithms": {
-          "module_ref": "DSA Core",
+        "Discrete Mathematics": {
+          "course_code": "MA131302",
           "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PL2_aWCzGMAwI3W_JlcBbtYTwiQSsOTtf6",
-          "provider": "Abdul Bari",
-          "interactive": "https://visualgo.net/"
+          "youtube": "https://www.youtube.com/results?search_query=Discrete+Mathematics",
+          "nptel": "https://nptel.ac.in/courses/106106094",
+          "books": [
+            "Discrete Mathematics and its Applications by Kenneth H. Rosen"
+          ]
+        },
+        "Object Oriented Programming in C++": {
+          "course_code": "CS131303",
+          "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Object+Oriented+Programming+in+C%2B%2B",
+          "nptel": "https://nptel.ac.in/courses/106105151",
+          "books": [
+            "Object Oriented Programming with C++ by E. Balaguruswamy"
+          ]
         },
         "Digital Systems": {
-          "module_ref": "Digital Logic Design",
+          "course_code": "ET131304",
           "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRjMH3mWf6kwqiTbT798eAOm",
-          "provider": "Neso Academy"
+          "youtube": "https://www.youtube.com/results?search_query=Digital+Systems+logic+design",
+          "nptel": "https://nptel.ac.in/courses/108105113",
+          "books": [
+            "Digital Design by M. Morris Mano"
+          ]
         },
-        "Object Oriented Programming (C++)": {
-          "module_ref": "OOP Concepts",
+        "Data Structure and Algorithms": {
+          "course_code": "CS131305",
           "pdf": "https://astu.ac.in/wp-content/uploads/3rd-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLVlQHNRLflT8igJeRdK1hAtyH_sY1P7O6",
-          "provider": "Saurabh Shukla"
+          "youtube": "https://www.youtube.com/results?search_query=Data+Structure+and+Algorithms",
+          "nptel": "https://nptel.ac.in/courses/106105225",
+          "interactive": "https://visualgo.net/",
+          "books": [
+            "Fundamentals of Data Structures of C++ by Ellis Horowitz"
+          ]
         }
       }
     },
     "Semester_4": {
       "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
       "subjects": {
-        "Operating Systems": {
-          "module_ref": "OS Core",
+        "Computer Organization and Architecture": {
+          "course_code": "CSE181402",
           "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiGz9donHRrE9I3Mwn6XdP8p",
-          "provider": "Gate Smashers",
-          "pdf_source": "https://codex.cs.yale.edu/os-book/OS10/slide-dir/index.html"
+          "youtube": "https://www.youtube.com/results?search_query=Computer+Organization+and+Architecture",
+          "nptel": "https://nptel.ac.in/courses/106105163",
+          "books": [
+            "Computer Organization and Design by David A. Patterson"
+          ]
         },
-        "Computer Organization & Architecture": {
-          "module_ref": "COA",
+        "Operating System": {
+          "course_code": "CSE181403",
           "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgLLlzdgiTUKULKJPYc0A4q",
-          "provider": "Neso Academy"
+          "youtube": "https://www.youtube.com/results?search_query=Operating+System",
+          "nptel": "https://nptel.ac.in/courses/106108101",
+          "pdf_source": "https://pages.cs.wisc.edu/~remzi/OSTEP/",
+          "books": [
+            "Operating System Concepts Essentials by Avi Silberschatz"
+          ]
+        },
+        "JAVA Programming": {
+          "course_code": "CSE181404",
+          "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=JAVA+Programming",
+          "nptel": "https://nptel.ac.in/courses/106105191",
+          "books": [
+            "JAVA: How to Program by Deitel & Deitel"
+          ]
         },
         "Graph Theory": {
-          "module_ref": "Graph Algorithms",
+          "course_code": "CSE181405",
           "pdf": "https://astu.ac.in/wp-content/uploads/4th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiEcw2jS8x8vMv0f2G0G2Nbx",
-          "provider": "Gate Smashers"
+          "youtube": "https://www.youtube.com/results?search_query=Graph+Theory",
+          "nptel": "https://nptel.ac.in/courses/106108054",
+          "books": [
+            "Introduction to Graph Theory by D. B. West"
+          ]
         }
       }
     },
     "Semester_5": {
       "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
       "subjects": {
-        "Microprocessor & Microcontroller": {
-          "module_ref": "Microprocessor Architecture",
+        "Database Management System": {
+          "course_code": "CSE181501",
           "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgLLlzdgiTUKULKJPYc0A4q",
-          "provider": "Neso Academy"
+          "youtube": "https://www.youtube.com/results?search_query=Database+Management+System",
+          "nptel": "https://nptel.ac.in/courses/106105175",
+          "interactive": "https://sqlbolt.com/",
+          "books": [
+            "Database System Concepts by Abraham Silberschatz"
+          ]
         },
-        "Database Management Systems": {
-          "module_ref": "DBMS Core",
+        "Design and Analysis of Algorithm": {
+          "course_code": "CSE181502",
           "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8KuIsVinIdslYw5OD",
-          "provider": "Gate Smashers",
-          "interactive": "https://sqlbolt.com/"
+          "youtube": "https://www.youtube.com/results?search_query=Design+and+Analysis+of+Algorithm",
+          "nptel": "https://nptel.ac.in/courses/106106131",
+          "books": [
+            "Introduction to Algorithms by Thomas H. Cormen"
+          ]
         },
-        "Formal Language & Automata Theory": {
-          "module_ref": "Automata",
+        "Formal Language and Automata Theory": {
+          "course_code": "CSE181503",
           "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgp46KUv4ZY69yXmpwKOIev",
-          "provider": "Neso Academy"
+          "youtube": "https://www.youtube.com/results?search_query=Formal+Language+and+Automata+Theory",
+          "nptel": "https://nptel.ac.in/courses/106106049",
+          "books": [
+            "Theory of computer science by Mishra & Chandrasekharan"
+          ]
+        },
+        "Microcontrollers and Applications": {
+          "course_code": "CSE1815PE11",
+          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Microcontrollers+and+Applications",
+          "nptel": "https://nptel.ac.in/courses/108105102",
+          "books": [
+            "The 8051 Microcontroller and Embedded Systems by M. A. Mazidi"
+          ]
+        },
+        "Queuing Theory and Modelling": {
+          "course_code": "CSE1815PE12",
+          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Queuing+Theory+and+Modelling",
+          "books": [
+            "Discrete-Event System and Simulation by Jerry Banks"
+          ]
+        },
+        "Information Retrieval": {
+          "course_code": "CSE1815PE13",
+          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Information+Retrieval",
+          "books": [
+            "An Introduction to Information Retrieval by C. D. Manning"
+          ]
+        },
+        "Computer Graphics": {
+          "course_code": "CSE1815PE14",
+          "pdf": "https://astu.ac.in/wp-content/uploads/5th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Computer+Graphics",
+          "books": [
+            "Computer Graphics by D. Hearn and P. M. Backer"
+          ]
         }
       }
     },
@@ -99,107 +165,286 @@
       "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
       "subjects": {
         "Compiler Design": {
-          "module_ref": "Compilers",
+          "course_code": "CSE181601",
           "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRj6noJV_Z8U6XNIn7isUo4m",
-          "provider": "Neso Academy"
+          "youtube": "https://www.youtube.com/results?search_query=Compiler+Design",
+          "nptel": "https://nptel.ac.in/courses/106108113",
+          "books": [
+            "Compilers: Principles, Techniques, and Tools by A.V. Aho"
+          ]
         },
         "Computer Networks": {
-          "module_ref": "Networking",
+          "course_code": "CSE181602",
           "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLxCzCOWd7aiGFBD2-2joCpWOLUrDLvVV_",
-          "provider": "Gate Smashers"
+          "youtube": "https://www.youtube.com/results?search_query=Computer+Networks",
+          "nptel": "https://nptel.ac.in/courses/106105183",
+          "books": [
+            "Data Communication and Networking by Behrouz A. Forouzan"
+          ]
+        },
+        "Data Mining": {
+          "course_code": "CSE1816PE21",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Data+Mining",
+          "nptel": "https://nptel.ac.in/courses/106105174",
+          "books": [
+            "Introduction to Data Mining by Pang-Ning Tan"
+          ]
+        },
+        "Advanced Computer Architecture": {
+          "course_code": "CSE1816PE22",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Advanced+Computer+Architecture",
+          "nptel": "https://nptel.ac.in/courses/106103206",
+          "books": [
+            "Computer Architecture: A Quantitative Approach by Hennessy and Patterson"
+          ]
+        },
+        "Image Processing": {
+          "course_code": "CSE1816PE31",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Image+Processing",
+          "nptel": "https://nptel.ac.in/courses/117105079",
+          "books": [
+            "Digital Image Processing by Rafael C Gonzalez"
+          ]
+        },
+        "Ad hoc and Sensor Networks": {
+          "course_code": "CSE1816PE32",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Ad+hoc+and+Sensor+Networks",
+          "books": [
+            "Ad Hoc Wireless Networks: Architectures and Protocols by C. Siva Ram Murthy"
+          ]
+        },
+        "Real Time Systems": {
+          "course_code": "CSE1816PE33",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Real+Time+Systems",
+          "nptel": "https://nptel.ac.in/courses/106105172",
+          "books": [
+            "Real-Time Systems by Jane W. Liu"
+          ]
+        },
+        "Software Engineering": {
+          "course_code": "CSE1816OE11",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Software+Engineering",
+          "nptel": "https://nptel.ac.in/courses/106101061",
+          "books": [
+            "Software Engineering A practitioners approach by R. S. Pressman"
+          ]
+        },
+        "Information Theory and Coding": {
+          "course_code": "CSE1816OE12",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Information+Theory+and+Coding",
+          "nptel": "https://nptel.ac.in/courses/117101053",
+          "books": [
+            "Elements of Information Theory by T. M. Cover"
+          ]
+        },
+        "Fault Tolerant Computing": {
+          "course_code": "CSE1816OE13",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Fault+Tolerant+Computing",
+          "books": [
+            "Fault-Tolerant Systems by Israel Koren"
+          ]
+        },
+        "Mini Project": {
+          "course_code": "CSE181621",
+          "pdf": "https://astu.ac.in/wp-content/uploads/6th-semester-CSE.pdf",
+          "project_info": "3 Credits (0-0-6). A project is to be done in groups. Guidelines and evaluation metrics will be issued by the university."
         }
       }
     },
     "Semester_7": {
       "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
       "subjects": {
-        "Cryptography & Information Security": {
-          "module_ref": "Security",
+        "Cloud Computing": {
+          "course_code": "CSE1817PE41",
           "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
-          "youtube": "https://www.youtube.com/playlist?list=PLBlnK6fEyqRgJD7Gk7yv3VvXvT9EId3M5",
-          "provider": "Neso Academy"
+          "youtube": "https://www.youtube.com/results?search_query=Cloud+Computing",
+          "nptel": "https://nptel.ac.in/courses/106105167",
+          "books": [
+            "Cloud Computing - A Practical Approach by Anthony T. Velte"
+          ]
         },
-        "Project Phase I": {
-          "module_ref": "Capstone Design",
-          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf"
+        "Computational Complexity": {
+          "course_code": "CSE1817PE42",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Computational+Complexity",
+          "nptel": "https://nptel.ac.in/courses/106104139",
+          "books": [
+            "The Theory of Computation by Bernard ME Moret"
+          ]
+        },
+        "Principles of Programming Languages": {
+          "course_code": "CSE1817PE43",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Principles+of+Programming+Languages",
+          "nptel": "https://nptel.ac.in/courses/106102067",
+          "books": [
+            "Programming Languages: Concepts and Constructs by Ravi Sethi"
+          ]
+        },
+        "Machine Learning": {
+          "course_code": "CSE1817OE21",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Machine+Learning",
+          "nptel": "https://nptel.ac.in/courses/106106139",
+          "books": [
+            "Machine Learning by Tom Mitchell"
+          ]
+        },
+        "Human Computer Interaction": {
+          "course_code": "CSE1817OE22",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Human+Computer+Interaction",
+          "nptel": "https://nptel.ac.in/courses/106103115",
+          "books": [
+            "Human Computer Interaction by Alan Dix"
+          ]
+        },
+        "Computer Vision and its Applications": {
+          "course_code": "CSE1817OE23",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Computer+Vision+and+its+Applications",
+          "nptel": "https://nptel.ac.in/courses/106105216",
+          "books": [
+            "Computer Vision: A Modern Approach by Forsyth"
+          ]
+        },
+        "Distributed Systems": {
+          "course_code": "CSE1817OE31",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Distributed+Systems",
+          "nptel": "https://nptel.ac.in/courses/106106168",
+          "books": [
+            "Distributed System: Concepts and Design by Coulouris"
+          ]
+        },
+        "Computational Geometry": {
+          "course_code": "CSE1817OE32",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Computational+Geometry",
+          "nptel": "https://nptel.ac.in/courses/106102011",
+          "books": [
+            "Computational Geometry: Algorithms and Applications by Mark de Berg"
+          ]
+        },
+        "Embedded Systems": {
+          "course_code": "CSE1817OE33",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Embedded+Systems",
+          "nptel": "https://nptel.ac.in/courses/108102045",
+          "books": [
+            "Embedded Systems Design by Frank Vahid and Tony Givargis"
+          ]
+        },
+        "Project-1": {
+          "course_code": "CSE181722",
+          "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
+          "project_info": "6 Credits (0-0-12). Initial system design, requirement gathering, and architectural planning for a capstone implementation. Guidelines will be issued by the university from time to time."
         }
       }
     },
     "Semester_8": {
       "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
       "subjects": {
-        "Distributed Systems": {
-          "module_ref": "Advanced Architecture",
-          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf"
+        "Cryptography and Network Security": {
+          "course_code": "CSE1818PE51",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Cryptography+and+Network+Security",
+          "nptel": "https://nptel.ac.in/courses/106105031",
+          "books": [
+            "Cryptography and Network Security by William Stallings"
+          ]
         },
-        "Major Project": {
-          "module_ref": "Capstone Implementation",
-          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf"
+        "Speech and Natural Language Processing": {
+          "course_code": "CSE1818PE52",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Speech+and+Natural+Language+Processing",
+          "nptel": "https://nptel.ac.in/courses/106105158",
+          "books": [
+            "Speech and Language Processing by Daniel Jurafsky"
+          ]
+        },
+        "Parallel Computing": {
+          "course_code": "CSE1818PE53",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Parallel+Computing",
+          "nptel": "https://nptel.ac.in/courses/106102114",
+          "books": [
+            "An Introduction to Parallel Programming by Peter S Pacheco"
+          ]
+        },
+        "Big Data Analytics": {
+          "course_code": "CSE1818PE61",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Big+Data+Analytics",
+          "nptel": "https://nptel.ac.in/courses/106104189",
+          "books": [
+            "Analytics in a Big Data World by Bart Baesens"
+          ]
+        },
+        "Neural Networks and Deep Learning": {
+          "course_code": "CSE1818PE63",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Neural+Networks+and+Deep+Learning",
+          "nptel": "https://nptel.ac.in/courses/106105215",
+          "books": [
+            "Deep learning by Ian J. Goodfellow"
+          ]
+        },
+        "Artificial Intelligence": {
+          "course_code": "CSE1818OE41",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Artificial+Intelligence",
+          "nptel": "https://nptel.ac.in/courses/106105077",
+          "books": [
+            "Artificial Intelligence: A Modern Approach by Stuart Russell"
+          ]
+        },
+        "Quantum Computing": {
+          "course_code": "CSE1818OE42",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Quantum+Computing",
+          "nptel": "https://nptel.ac.in/courses/106108115",
+          "books": [
+            "Quantum Computation and Quantum Information by Nielsen M. A."
+          ]
+        },
+        "Internet of Things": {
+          "course_code": "CSE1818OE51",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Internet+of+Things",
+          "nptel": "https://nptel.ac.in/courses/106105166",
+          "books": [
+            "Internet of Things: A Hands-on Approach by Arshdeep Bahga"
+          ]
+        },
+        "Electronic Design Automation": {
+          "course_code": "CSE1818OE53",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "youtube": "https://www.youtube.com/results?search_query=Electronic+Design+Automation",
+          "nptel": "https://nptel.ac.in/courses/106105161",
+          "books": [
+            "Application Specific Integrated Circuits by M.J.S.Smith"
+          ]
+        },
+        "Project-2": {
+          "course_code": "CSE181822",
+          "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
+          "project_info": "6 Credits (0-0-12). Capstone project involving design, development, and evaluation of a complete system. Guidelines will be issued by the university from time to time."
         }
       }
     }
   },
-  "books_directory": {
-    "Systems_and_Hardware": [
-      {
-        "title": "Operating Systems: Three Easy Pieces (OSTEP)",
-        "authors": "Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau",
-        "read_online_link": "https://pages.cs.wisc.edu/~remzi/OSTEP/",
-        "description": "The absolute best modern, free online textbook for understanding operating systems, virtualization, concurrency, and persistence.",
-        "target_subjects": ["Operating Systems"]
-      },
-      {
-        "title": "Beej's Guide to Network Programming",
-        "authors": "Brian 'Beej Jorgensen' Hall",
-        "read_online_link": "https://beej.us/guide/bgnet/",
-        "description": "A classic, highly readable guide to C sockets and network programming.",
-        "target_subjects": ["Computer Networks"]
-      }
-    ],
-    "Core_Computer_Science": [
-      {
-        "title": "Structure and Interpretation of Computer Programs (SICP)",
-        "authors": "Harold Abelson and Gerald Jay Sussman",
-        "read_online_link": "https://mitpress.mit.edu/sites/default/files/sicp/index.html",
-        "description": "A foundational text for understanding the deep mechanics of programming languages and program execution.",
-        "target_subjects": ["Compiler Design"]
-      },
-      {
-        "title": "Open Data Structures",
-        "authors": "Pat Morin",
-        "read_online_link": "https://opendatastructures.org/",
-        "description": "A comprehensive, free textbook covering all fundamental data structures with code examples in C++ and Java.",
-        "target_subjects": ["Data Structures & Algorithms"]
-      }
-    ],
-    "Compilers_and_Languages": [
-      {
-        "title": "Crafting Interpreters",
-        "authors": "Robert Nystrom",
-        "read_online_link": "https://craftinginterpreters.com/",
-        "description": "An incredible, free online book that walks you through building a programming language from scratch in Java and C.",
-        "target_subjects": ["Compiler Design"]
-      }
-    ],
-    "Databases_and_Distributed_Systems": [
-      {
-        "title": "Database Design - 2nd Edition",
-        "authors": "Adrienne Watt",
-        "read_online_link": "https://opentextbc.ca/dbdesign01/",
-        "description": "An open-source textbook covering the fundamentals of database architecture, normalization, and SQL.",
-        "target_subjects": ["Database Management Systems"]
-      }
-    ]
-  },
   "global_libraries": {
-    "ebooks": "https://libgen.is",
-    "courseware": "https://nptel.ac.in/courses",
-    "documentation": "https://devdocs.io/",
     "ebook_search_engines": [
-      "https://archive.org/ (Internet Archive - Open Library)",
-      "https://libgen.is/ (Library Genesis)"
+      "https://libgen.li/"
     ]
   }
 }
