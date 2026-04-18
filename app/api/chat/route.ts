@@ -9,6 +9,7 @@ type ChatRequestBody = {
   messages?: ChatMessage[];
   system?: string;
   isOnline?: boolean;
+  model?: string;
 };
 
 export async function POST(req: Request) {
@@ -70,7 +71,7 @@ export async function POST(req: Request) {
       });
 
       const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
+        model: body.model || 'gemini-1.5-flash',
         contents,
       });
 

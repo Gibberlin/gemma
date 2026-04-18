@@ -47,6 +47,7 @@ export default function ChatPanel({
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(false);
+  const [onlineModel, setOnlineModel] = useState("gemini-2.0-flash");
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -108,6 +109,7 @@ export default function ChatPanel({
           system,
           messages: nextMessages,
           isOnline,
+          model: isOnline ? onlineModel : undefined,
         }),
       });
 
@@ -227,7 +229,7 @@ export default function ChatPanel({
           </div>
         ) : null}
 
-        <div className="mb-3 flex px-1">
+        <div className="mb-3 flex items-center justify-between px-1">
           <label className="flex items-center gap-2 text-xs text-slate-500 cursor-pointer select-none">
             <div className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${isOnline ? 'bg-primary' : 'bg-slate-300'}`}>
               <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${isOnline ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
@@ -238,8 +240,22 @@ export default function ChatPanel({
               checked={isOnline} 
               onChange={(e) => setIsOnline(e.target.checked)} 
             />
-            <span className="font-medium">Online Mode</span> (Gemini 1.5 Flash)
+            <span className="font-medium">Online Mode</span>
           </label>
+
+          {isOnline && (
+            <select
+              value={onlineModel}
+              onChange={(e) => setOnlineModel(e.target.value)}
+              className="text-xs border border-divider rounded-md bg-background px-2 py-1 text-slate-700 outline-none focus:border-primary shadow-sm"
+            >
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+              <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            </select>
+          )}
         </div>
 
         <div className="flex gap-2">
