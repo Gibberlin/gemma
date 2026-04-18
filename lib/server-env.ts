@@ -9,5 +9,6 @@ export function getServerEnv() {
     lmStudioBaseUrl: required("LMSTUDIO_API_BASE_URL"),
     lmStudioModel: required("LMSTUDIO_MODEL"),
     lmStudioApiKey: process.env.LMSTUDIO_API_KEY?.trim() || undefined,
+    geminiApiKey: process.env.GEMINI_API_KEY?.trim() || undefined,
   };
 }

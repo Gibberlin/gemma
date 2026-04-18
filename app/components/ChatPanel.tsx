@@ -46,6 +46,7 @@ export default function ChatPanel({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(false);
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
@@ -106,6 +107,7 @@ export default function ChatPanel({
         body: JSON.stringify({
           system,
           messages: nextMessages,
+          isOnline,
         }),
       });
 
@@ -225,6 +227,21 @@ export default function ChatPanel({
           </div>
         ) : null}
 
+        <div className="mb-3 flex px-1">
+          <label className="flex items-center gap-2 text-xs text-slate-500 cursor-pointer select-none">
+            <div className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${isOnline ? 'bg-primary' : 'bg-slate-300'}`}>
+              <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${isOnline ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+            </div>
+            <input 
+              type="checkbox" 
+              className="sr-only" 
+              checked={isOnline} 
+              onChange={(e) => setIsOnline(e.target.checked)} 
+            />
+            <span className="font-medium">Online Mode</span> (Gemini 1.5 Flash)
+          </label>
+        </div>
+
         <div className="flex gap-2">
           <textarea
             className="input flex-1 resize-none"
@@ -233,10 +250,10 @@ export default function ChatPanel({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                void send();
-              }
+               if (e.key === "Enter" && !e.shiftKey) {
+                 e.preventDefault();
+                 void send();
+               }
             }}
           />
           <button
