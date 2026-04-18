@@ -1,13 +1,7 @@
-function required(name: string): string {
-  const value = process.env[name]?.trim();
-  if (!value) throw new Error(`Missing required env var: ${name}`);
-  return value;
-}
-
 export function getServerEnv() {
   return {
-    lmStudioBaseUrl: required("LMSTUDIO_API_BASE_URL"),
-    lmStudioModel: required("LMSTUDIO_MODEL"),
+    lmStudioBaseUrl: process.env.LMSTUDIO_API_BASE_URL?.trim() || "http://localhost:1234/v1",
+    lmStudioModel: process.env.LMSTUDIO_MODEL?.trim() || undefined,
     lmStudioApiKey: process.env.LMSTUDIO_API_KEY?.trim() || undefined,
     geminiApiKey: process.env.GEMINI_API_KEY?.trim() || undefined,
   };
