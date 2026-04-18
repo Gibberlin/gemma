@@ -7,6 +7,7 @@ import {
   formatSemesterLabel,
   semesterSortKey,
 } from "@/lib/catalog";
+import LoadingScreen from "@/app/components/LoadingScreen";
 
 export default function Home() {
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +20,8 @@ export default function Home() {
       try {
         setIsLoading(true);
         setError(null);
+        // Add a slight delay so the boot screen animation can be enjoyed
+        await new Promise((resolve) => setTimeout(resolve, 1500));
         const res = await fetch("/courses.json", { cache: "no-store" });
         if (!res.ok) throw new Error(`Failed to load courses.json (HTTP ${res.status})`);
         const json = (await res.json()) as CoursesJson;
@@ -40,6 +43,10 @@ export default function Home() {
     return keys.slice().sort((a, b) => semesterSortKey(a) - semesterSortKey(b));
   }, [courses]);
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <div className="min-h-screen bg-transparent text-foreground">
       <div className="mx-auto w-full max-w-3xl px-6 py-10">
@@ -60,9 +67,7 @@ export default function Home() {
 
         <div className="card p-6">
           <h2 className="mb-4 text-lg font-medium text-text-primary">Semesters</h2>
-          {isLoading ? (
-            <div className="text-lg opacity-70">Loading…</div>
-          ) : semesters.length === 0 ? (
+          {semesters.length === 0 ? (
             <div className="text-lg opacity-70">No semesters found in `public/courses.json`.</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
