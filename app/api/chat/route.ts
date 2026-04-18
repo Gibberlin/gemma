@@ -50,23 +50,28 @@ export async function POST(req: Request) {
 
       const ai = new GoogleGenAI({ 
         apiKey: serverEnv.geminiApiKey,
-        httpOptions: { apiVersion: 'v1' }
       });
       
       const systemInstruction = body.system?.trim();
       const chatMessages = messages.filter(m => m.role !== 'system');
       
-      const contents = chatMessages.map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }]
-      }));
+      const contents = chatMessages.map((m, index) => {
+        let text = m.content;
+        
+        // Inject system instruction into the first user message
+        if (index === 0 && m.role === 'user' && systemInstruction) {
+          text = `[System]\n${systemInstruction}\n\n[User]\n${text}`;
+        }
+
+        return {
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text }]
+        };
+      });
 
       const response = await ai.models.generateContent({
         model: 'gemini-1.5-flash',
         contents,
-        config: systemInstruction ? {
-          systemInstruction,
-        } : undefined,
       });
 
       return Response.json({ content: response.text });
