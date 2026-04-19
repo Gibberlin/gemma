@@ -49,16 +49,16 @@ export async function POST(req: Request) {
         return Response.json({ error: "GEMINI_API_KEY is not configured on the server." }, { status: 500 });
       }
 
-      const ai = new GoogleGenAI({ 
+      const ai = new GoogleGenAI({
         apiKey: serverEnv.geminiApiKey,
       });
-      
+
       const systemInstruction = body.system?.trim();
       const chatMessages = messages.filter(m => m.role !== 'system');
-      
+
       const contents = chatMessages.map((m, index) => {
         let text = m.content;
-        
+
         // Inject system instruction into the first user message
         if (index === 0 && m.role === 'user' && systemInstruction) {
           text = `[System]\n${systemInstruction}\n\n[User]\n${text}`;
