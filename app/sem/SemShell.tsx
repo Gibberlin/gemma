@@ -11,8 +11,6 @@ type Props = {
   children: React.ReactNode;
 };
 
-const COLLAPSED_WIDTH_CLASS = "w-16";
-const EXPANDED_WIDTH_CLASS = "w-64";
 
 function getDefaultCollapsed() {
   if (typeof window === "undefined") return false;
