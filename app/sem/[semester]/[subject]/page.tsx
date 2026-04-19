@@ -78,14 +78,14 @@ export default function SubjectHomePage() {
           <Link href={`${subjectBase}/materials`} className="card card-hover p-4 sm:p-6">
             <div className="font-medium text-text-primary text-base sm:text-lg">Materials</div>
             <div className="mt-1 text-xs sm:text-sm opacity-80">
-              PDFs and module references from `public/materials.json`.
+              Books, Youtube lectures, NPTEL videos and more to study the subject.
             </div>
           </Link>
 
           <Link href={`${subjectBase}/qa`} className="card card-hover p-4 sm:p-6">
             <div className="font-medium text-text-primary text-base sm:text-lg">Subject Q&amp;A</div>
             <div className="mt-1 text-xs sm:text-sm opacity-80">
-              Chat with subject-specific context from `public/courses.json`.
+              Ask questions related to this subject and get answers from LLM based on Gemma. disclaimer: The project works best with LMstudios with Gemma 4.
             </div>
           </Link>
         </div>
