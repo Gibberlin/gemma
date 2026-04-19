@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       });
 
       const response = await ai.models.generateContent({
-        model: body.model || 'gemini-1.5-flash',
+        model: body.model || 'gemini-2.5-flash',
         contents,
       });
 

@@ -47,7 +47,7 @@ export default function ChatPanel({
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(false);
-  const [onlineModel, setOnlineModel] = useState("gemini-2.0-flash");
+  const [onlineModel, setOnlineModel] = useState("gemini-2.5-flash");
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
