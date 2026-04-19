@@ -84,8 +84,9 @@ export default function SubjectHomePage() {
 
           <Link href={`${subjectBase}/qa`} className="card card-hover p-4 sm:p-6">
             <div className="font-medium text-text-primary text-base sm:text-lg">Subject Q&amp;A</div>
-            <div className="mt-1 text-xs sm:text-sm opacity-80">
-              Ask questions related to this subject and get answers from LLM based on Gemma. disclaimer: The project works best with LMstudios with Gemma 4.
+            <div className="mt-1 text-xs sm:text-sm opacity-80 flex flex-col">
+              Ask questions related to this subject and get answers from LLM based on Gemma.
+              <span className="mt-1 text-xs sm:text-sm opacity-80 text-danger">Disclaimer: The project works best with LMstudios with Gemma 4.</span>
             </div>
           </Link>
         </div>
