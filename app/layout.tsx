@@ -3,7 +3,7 @@ import "./globals.css";
 import "katex/dist/katex.min.css";
 
 export const metadata: Metadata = {
-  title: "Gemma Study Hub",
+  title: "Gemma Study Companion 🤖",
   description: "Semester → Subject → Materials and Q&A (LM Studio)",
 };
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { FiChevronLeft, FiChevronRight, FiUser } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiUser, FiMenu } from "react-icons/fi";
 import { formatSemesterLabel, semesterSortKey } from "@/lib/catalog";
 
 type Props = {
@@ -38,8 +38,8 @@ export default function SemShell({ semesters, currentSemester, children }: Props
     return semesters.slice().sort((a, b) => semesterSortKey(a) - semesterSortKey(b));
   }, [semesters]);
 
-  const contentOffsetClass = collapsed ? "pl-16" : "pl-16 md:pl-64";
-  const sidebarWidthClass = collapsed ? COLLAPSED_WIDTH_CLASS : EXPANDED_WIDTH_CLASS;
+  const contentOffsetClass = collapsed ? "pl-0 md:pl-16" : "pl-0 md:pl-64";
+  const sidebarWidthClass = collapsed ? "-translate-x-full md:translate-x-0 w-64 md:w-16" : "translate-x-0 w-64";
 
   return (
     <div className={["h-screen overflow-hidden text-foreground", contentOffsetClass].join(" ")}>
@@ -48,15 +48,27 @@ export default function SemShell({ semesters, currentSemester, children }: Props
           type="button"
           aria-label="Close sidebar"
           onClick={() => setCollapsed(true)}
-          className="fixed inset-0 z-30 bg-black/30 md:hidden"
+          className="fixed inset-0 z-30 bg-black/30 md:hidden transition-opacity"
         />
       ) : null}
+
+      {/* Mobile open button */}
+      {collapsed && (
+        <button
+          type="button"
+          aria-label="Open sidebar"
+          onClick={() => setCollapsed(false)}
+          className="md:hidden fixed bottom-6 right-6 z-30 grid h-14 w-14 place-items-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+        >
+          <FiMenu className="text-2xl" />
+        </button>
+      )}
 
       <aside
         className={[
           "fixed left-0 top-0 z-40 h-screen",
           "border-r border-divider bg-surface shadow-sm",
-          "transition-[width] duration-200 ease-out",
+          "transition-[width,transform] duration-200 ease-out",
           sidebarWidthClass,
         ].join(" ")}
       >
@@ -117,6 +129,11 @@ export default function SemShell({ semesters, currentSemester, children }: Props
                     <li key={semesterKey}>
                       <Link
                         href={`/sem/${encodeURIComponent(semesterKey)}`}
+                        onClick={() => {
+                          if (typeof window !== "undefined" && window.innerWidth < 768) {
+                            setCollapsed(true);
+                          }
+                        }}
                         className={[
                           "group flex items-center gap-3 rounded-2xl border px-3 py-2 text-sm transition-colors",
                           isActive

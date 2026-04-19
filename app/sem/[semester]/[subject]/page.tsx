@@ -50,48 +50,48 @@ export default function SubjectHomePage() {
 
   return (
     <div className="min-h-screen bg-transparent text-foreground">
-      <div className="mx-auto w-full max-w-3xl px-6 py-10">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
         <header className="mb-6">
-          <div className="mb-2 flex items-center gap-3">
+          <div className="mb-2 flex flex-wrap items-center gap-2 sm:gap-3">
             <Link
               href={`/sem/${encodeURIComponent(semesterKey)}`}
-              className="text-sm opacity-80 hover:opacity-100"
+              className="text-xs sm:text-sm opacity-80 hover:opacity-100"
             >
               ← {formatSemesterLabel(semesterKey)}
             </Link>
-            <span className="text-sm opacity-60">/</span>
-            <span className="text-sm opacity-80">{subjectName}</span>
+            <span className="text-xs sm:text-sm opacity-60">/</span>
+            <span className="text-xs sm:text-sm opacity-80">{subjectName}</span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">{subjectName}</h1>
-          <p className="text-sm opacity-80">
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight mt-1">{subjectName}</h1>
+          <p className="text-xs sm:text-sm opacity-80 mt-1.5">
             {isLoading ? "Loading…" : subject?.context ?? "Pick an option."}
           </p>
         </header>
 
         {error ? (
-          <div className="mb-4 rounded-2xl border border-danger bg-danger-weak p-4 text-sm text-danger">
+          <div className="mb-4 rounded-2xl border border-danger bg-danger-weak p-4 text-xs sm:text-sm text-danger">
             {error}
           </div>
         ) : null}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Link href={`${subjectBase}/materials`} className="card card-hover p-6">
-            <div className="font-medium text-text-primary">Materials</div>
-            <div className="mt-1 text-sm opacity-80">
+          <Link href={`${subjectBase}/materials`} className="card card-hover p-4 sm:p-6">
+            <div className="font-medium text-text-primary text-base sm:text-lg">Materials</div>
+            <div className="mt-1 text-xs sm:text-sm opacity-80">
               PDFs and module references from `public/materials.json`.
             </div>
           </Link>
 
-          <Link href={`${subjectBase}/qa`} className="card card-hover p-6">
-            <div className="font-medium text-text-primary">Subject Q&amp;A</div>
-            <div className="mt-1 text-sm opacity-80">
+          <Link href={`${subjectBase}/qa`} className="card card-hover p-4 sm:p-6">
+            <div className="font-medium text-text-primary text-base sm:text-lg">Subject Q&amp;A</div>
+            <div className="mt-1 text-xs sm:text-sm opacity-80">
               Chat with subject-specific context from `public/courses.json`.
             </div>
           </Link>
         </div>
 
         {!isLoading && (!semester || !subject) ? (
-          <div className="card mt-4 p-6 text-sm opacity-80">
+          <div className="card mt-4 p-4 sm:p-6 text-xs sm:text-sm opacity-80">
             This subject/semester pair wasn’t found in `public/courses.json` (links still work if you want to add it).
           </div>
         ) : null}

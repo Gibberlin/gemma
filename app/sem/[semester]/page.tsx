@@ -47,47 +47,47 @@ export default function SemesterPage() {
 
   return (
     <div className="min-h-screen bg-transparent text-foreground">
-      <div className="mx-auto w-full max-w-3xl px-6 py-10">
+      <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 py-8 sm:py-10">
         <header className="mb-6">
           <div className="mb-2">
-            <Link href="/" className="text-sm opacity-80 hover:opacity-100">
+            <Link href="/" className="text-xs sm:text-sm opacity-80 hover:opacity-100">
               ← Home
             </Link>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">
             {formatSemesterLabel(semesterKey)}
           </h1>
-          <p className="text-sm opacity-80">{semester?.focus ?? "Choose a subject."}</p>
+          <p className="text-xs sm:text-sm opacity-80 mt-1">{semester?.focus ?? "Choose a subject."}</p>
         </header>
 
         {error ? (
-          <div className="mb-4 rounded-2xl border border-danger bg-danger-weak p-4 text-sm text-danger">
+          <div className="mb-4 rounded-2xl border border-danger bg-danger-weak p-4 text-xs sm:text-sm text-danger">
             {error}
           </div>
         ) : null}
 
-        <div className="card p-6">
-          <h2 className="mb-4 text-sm font-medium text-text-primary">Subjects</h2>
+        <div className="card p-4 sm:p-6">
+          <h2 className="mb-4 text-sm sm:text-base font-medium text-text-primary">Subjects</h2>
           {isLoading ? (
-            <div className="text-sm opacity-70">Loading…</div>
+            <div className="text-xs sm:text-sm opacity-70">Loading…</div>
           ) : !semester ? (
-            <div className="text-sm opacity-70">
+            <div className="text-xs sm:text-sm opacity-70">
               Semester not found in `public/courses.json`.
             </div>
           ) : subjects.length === 0 ? (
-            <div className="text-sm opacity-70">No subjects listed.</div>
+            <div className="text-xs sm:text-sm opacity-70">No subjects listed.</div>
           ) : (
             <div className="space-y-3">
               {semester.subjects.map((s) => (
                 <Link
                   key={s.name}
                   href={`/sem/${encodeURIComponent(semesterKey)}/${encodeURIComponent(s.name)}`}
-                  className="card card-hover block p-5 transition-colors"
+                  className="card card-hover block p-4 sm:p-5 transition-colors"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-2">
                     <div>
-                      <div className="font-medium text-text-primary text-lg">{s.name}</div>
-                      <div className="mt-1.5 text-sm opacity-80 leading-relaxed max-w-2xl">{s.context ?? "Open subject"}</div>
+                      <div className="font-medium text-text-primary text-base sm:text-lg">{s.name}</div>
+                      <div className="mt-1 sm:mt-1.5 text-xs sm:text-sm opacity-80 leading-relaxed max-w-2xl">{s.context ?? "Open subject"}</div>
                     </div>
                     <div className="flex flex-wrap gap-2 mt-2 sm:mt-0 sm:justify-end shrink-0">
                       {s.course_code && (
