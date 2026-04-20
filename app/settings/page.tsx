@@ -45,10 +45,11 @@ type TestStatus = {
 };
 
 // Explicit Electron check requirement
-const isElectron = () => 
-  typeof window !== "undefined" &&
-  (window as any).electron &&
-  typeof (window as any).electron.invoke === "function";
+const isElectron = () => {
+  if (typeof window === "undefined") return false;
+  const win = window as unknown as { electron?: { invoke?: unknown } };
+  return !!win.electron && typeof win.electron.invoke === "function";
+};
 
 function StatusBadge({ status }: { status: TestStatus }) {
   if (status.type === "idle") return null;
@@ -119,7 +120,7 @@ export default function SettingsPage() {
           }));
         }
       } catch (err) {
-        console.error("Failed to fetch models");
+        console.error("Failed to fetch models", err);
       }
     };
     fetchModels();
@@ -151,7 +152,8 @@ export default function SettingsPage() {
     }
 
     try {
-      const res = await (window as any).electron.invoke("test_local_llm", {
+      const win = window as unknown as { electron: { invoke: (channel: string, data: unknown) => Promise<{ success?: boolean }> } };
+      const res = await win.electron.invoke("test_local_llm", {
         url: config.local.endpoint,
         model: config.local.model,
       });
@@ -161,7 +163,8 @@ export default function SettingsPage() {
       } else {
         setTestStatus({ type: "error", message: "Failed to connect to LM Studio" });
       }
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Failed to test local connection", error);
       setTestStatus({ type: "error", message: "Failed to connect to LM Studio" });
     }
   };

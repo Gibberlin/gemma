@@ -252,7 +252,9 @@ export default function ChatPanel({
                           { role: "assistant", content: "⚠️ **Online Mode Selected:** Please setup your online model API Key in Settings to use Cloud API." }
                         ]);
                       }
-                    } catch (err) {}
+                    } catch (err) {
+                      console.error("Failed to parse gemma_llm_config:", err);
+                    }
                   } else {
                     setMessages(prev => [
                       ...prev,
