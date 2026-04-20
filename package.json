@@ -1,6 +1,6 @@
 {
   "name": "gemma",
-  "version": "0.1.0",
+  "version": "0.1.01",
   "private": true,
   "main": "main.js",
   "scripts": {
@@ -18,7 +18,16 @@
     "productName": "Gemma",
     "asar": false,
     "directories": {
-      "buildResources": "build"
+      "buildResources": "assets"
+    },
+    "win": {
+      "icon": "assets/gemma.ico"
+    },
+    "mac": {
+      "icon": "assets/gemma.ico"
+    },
+    "linux": {
+      "icon": "assets/gemma.ico"
     },
     "files": [
       "**/*",
