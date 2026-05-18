@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { FiChevronLeft, FiChevronRight, FiUser, FiMenu } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiUser, FiMenu, FiSettings } from "react-icons/fi";
 import { formatSemesterLabel, semesterSortKey } from "@/lib/catalog";
 
 type Props = {
@@ -162,7 +162,16 @@ export default function SemShell({ semesters, currentSemester, children }: Props
 
             <div className="px-3 pb-3">
               <div className="h-px bg-divider" />
-              <div className="mt-3">
+              <div className="mt-3 space-y-2">
+                <Link
+                  href="/settings"
+                  className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-2 text-sm text-text-primary transition-colors hover:border-divider hover:bg-background"
+                >
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-background">
+                    <FiSettings />
+                  </span>
+                  <span className="truncate font-medium">Settings</span>
+                </Link>
                 <Link
                   href="#"
                   className="flex items-center gap-3 rounded-2xl border border-transparent px-3 py-2 text-sm text-text-primary transition-colors hover:border-divider hover:bg-background"
