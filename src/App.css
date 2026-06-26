@@ -1055,7 +1055,8 @@ body {
   color: inherit;
 }
 
-.inline-code {
+.inline-code,
+.chat-bubble.assistant code:not(pre code) {
   font-family: 'Consolas', 'Monaco', 'Courier New', Courier, monospace;
   background: rgba(15, 23, 42, 0.06);
   color: #c2410c; /* High contrast orange for readability in light mode */
@@ -1063,4 +1064,50 @@ body {
   border-radius: 6px;
   font-size: 0.85rem;
   border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+/* Custom Markdown Table layout */
+.chat-bubble.assistant table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.88rem;
+  text-align: left;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--divider);
+  background: #ffffff;
+}
+
+.chat-bubble.assistant th {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--divider);
+}
+
+.chat-bubble.assistant td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--divider);
+  color: var(--text-secondary);
+}
+
+.chat-bubble.assistant tr:last-child td {
+  border-bottom: none;
+}
+
+.chat-bubble.assistant tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+/* Custom Markdown Blockquote layout */
+.chat-bubble.assistant blockquote {
+  border-left: 4px solid var(--primary);
+  padding: 0.5rem 1rem;
+  margin: 1rem 0;
+  background: var(--primary-glow);
+  color: var(--text-secondary);
+  font-style: italic;
+  border-radius: 4px;
 }

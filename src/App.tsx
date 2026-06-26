@@ -3,8 +3,6 @@ import {
   Settings,
   Paperclip,
   Send,
-  Check,
-  Copy,
   ExternalLink,
   XCircle,
   AlertTriangle,
@@ -19,6 +17,9 @@ import {
 } from "./api";
 import SettingsModal from "./components/SettingsModal";
 import ConfigurationPanel from "./components/ConfigurationPanel";
+import { marked } from "marked";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import "./App.css";
 
 // Types for courses and materials JSON maps
@@ -160,10 +161,29 @@ export default function App() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Load static files and configurations on mount
   useEffect(() => {
+    // Define global copy helper on window for markdown code blocks
+    (window as any).copyGemmaCode = (btn: HTMLButtonElement, containerId: string) => {
+      const container = document.getElementById(containerId);
+      const codeEl = container?.querySelector("code");
+      if (codeEl) {
+        const text = codeEl.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          const span = btn.querySelector("span");
+          if (span) {
+            span.innerText = "Copied!";
+            span.style.color = "#34d399";
+            setTimeout(() => {
+              span.innerText = "Copy";
+              span.style.color = "";
+            }, 2000);
+          }
+        });
+      }
+    };
+
     async function loadStaticData() {
       try {
         const syllabusRes = await fetch("/courses.json");
@@ -277,157 +297,89 @@ export default function App() {
     setAttachments((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  // Format and Copy code block helper
-  const handleCopyCode = (code: string, blockId: string) => {
-    navigator.clipboard.writeText(code).then(() => {
-      setCopiedId(blockId);
-      setTimeout(() => setCopiedId(null), 2000);
-    });
-  };
 
-  // Inline markdown rendering helper
-  const renderInlineMarkdown = (text: string): React.ReactNode[] => {
-    const inlineRegex = /(\*\*.*?\*\*|`.*?`|\[.*?\]\(.*?\))/g;
-    const splitParts = text.split(inlineRegex);
-
-    return splitParts.map((part, index) => {
-      if (part.startsWith("**") && part.endsWith("**")) {
-        return <strong key={index}>{part.slice(2, -2)}</strong>;
-      }
-      if (part.startsWith("`") && part.endsWith("`")) {
-        return <code key={index} className="inline-code">{part.slice(1, -1)}</code>;
-      }
-      const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
-      if (linkMatch) {
-        return (
-          <a key={index} href={linkMatch[2]} target="_blank" rel="noreferrer" className="text-teal-400 hover:underline inline-flex items-center gap-0.5">
-            {linkMatch[1]}
-            <ExternalLink size={10} />
-          </a>
-        );
-      }
-      return part;
-    });
-  };
-
-  // Custom regex block markdown parser supporting code blocks, headers, lists
-  const renderBlockMarkdown = (text: string) => {
-    const parts: React.ReactNode[] = [];
-    const blockRegex = /```(\w*)\n([\s\S]*?)(?:```|$)/g;
-    let lastIndex = 0;
-    let match;
-    let blockIdCounter = 0;
-
-    while ((match = blockRegex.exec(text)) !== null) {
-      if (match.index > lastIndex) {
-        const textSegment = text.substring(lastIndex, match.index);
-        parts.push(renderTextSegment(textSegment, `text-${lastIndex}`));
-      }
-
-      const language = match[1] || "code";
-      const codeContent = match[2];
-      const blockId = `code-${blockIdCounter++}-${match.index}`;
-
-      parts.push(
-        <div key={blockId} className="code-block-container">
-          <div className="code-block-header">
-            <span>{language.toUpperCase()}</span>
-            <button onClick={() => handleCopyCode(codeContent, blockId)} className="copy-btn">
-              {copiedId === blockId ? (
-                <>
-                  <Check size={12} className="text-teal-400" />
-                  <span className="text-teal-400">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy size={12} />
-                  <span>Copy</span>
-                </>
-              )}
-            </button>
-          </div>
-          <pre className="code-block-content">
-            <code>{codeContent}</code>
-          </pre>
+  // Configure custom marked renderer to wrap code blocks with copy buttons
+  const renderer = new marked.Renderer();
+  renderer.code = function({ text, lang }) {
+    const language = lang || "code";
+    const blockId = `code-block-${Math.random().toString(36).substring(2, 9)}`;
+    
+    return `
+      <div class="code-block-container" id="${blockId}">
+        <div class="code-block-header">
+          <span>${language.toUpperCase()}</span>
+          <button onclick="window.copyGemmaCode(this, '${blockId}')" class="copy-btn">
+            <span>Copy</span>
+          </button>
         </div>
-      );
-
-      lastIndex = blockRegex.lastIndex;
-    }
-
-    if (lastIndex < text.length) {
-      const remainingText = text.substring(lastIndex);
-      parts.push(renderTextSegment(remainingText, `text-end-${lastIndex}`));
-    }
-
-    return parts;
+        <pre class="code-block-content"><code class="language-${language}">${text}</code></pre>
+      </div>
+    `;
   };
+  marked.use({ renderer });
 
-  const renderTextSegment = (text: string, keyPrefix: string): React.ReactNode => {
-    const lines = text.split("\n");
-    const blocks: React.ReactNode[] = [];
-    let listItems: React.ReactNode[] = [];
-    let isInsideList = false;
-    let listType: "ul" | "ol" = "ul";
+  // Unified LaTeX and Markdown rendering pipeline
+  const renderMarkdownAndMath = (text: string): string => {
+    if (!text) return "";
 
-    const flushList = (key: string) => {
-      if (listItems.length > 0) {
-        if (listType === "ul") {
-          blocks.push(<ul key={`ul-${key}`} style={{ marginLeft: "1.5rem", marginBottom: "0.75rem" }}>{...listItems}</ul>);
-        } else {
-          blocks.push(<ol key={`ol-${key}`} style={{ marginLeft: "1.5rem", marginBottom: "0.75rem" }}>{...listItems}</ol>);
-        }
-        listItems = [];
-        isInsideList = false;
+    const placeholders: string[] = [];
+    let mathCounter = 0;
+
+    // Helper to store math and return placeholder id
+    const addPlaceholder = (mathText: string, displayMode: boolean) => {
+      try {
+        const html = katex.renderToString(mathText, {
+          displayMode,
+          throwOnError: false,
+          trust: true,
+        });
+        const id = `__MATH_PLACEHOLDER_${mathCounter++}__`;
+        placeholders.push(html);
+        return id;
+      } catch (e) {
+        console.error("KaTeX rendering error", e);
+        return mathText;
       }
     };
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const trimmed = line.trim();
+    // 1. Process display math blocks: $$...$$ or \[...\]
+    let processed = text.replace(/\$\$\s*([\s\S]+?)\s*\$\$/g, (_, math) => {
+      return addPlaceholder(math, true);
+    });
 
-      if (trimmed.startsWith("### ")) {
-        flushList(`h3-${i}`);
-        blocks.push(<h3 key={`h3-${i}`} style={{ margin: "1rem 0 0.5rem 0", color: "var(--text-primary)" }}>{renderInlineMarkdown(trimmed.substring(4))}</h3>);
-      } else if (trimmed.startsWith("## ")) {
-        flushList(`h2-${i}`);
-        blocks.push(<h2 key={`h2-${i}`} style={{ margin: "1.2rem 0 0.6rem 0", color: "var(--text-primary)" }}>{renderInlineMarkdown(trimmed.substring(3))}</h2>);
-      } else if (trimmed.startsWith("# ")) {
-        flushList(`h1-${i}`);
-        blocks.push(<h1 key={`h1-${i}`} style={{ margin: "1.5rem 0 0.75rem 0", color: "var(--text-primary)" }}>{renderInlineMarkdown(trimmed.substring(2))}</h1>);
-      } else if (trimmed.startsWith("> ")) {
-        flushList(`bq-${i}`);
-        blocks.push(
-          <blockquote key={`bq-${i}`} style={{ borderLeft: "4px solid var(--primary)", paddingLeft: "0.75rem", margin: "0.75rem 0", fontStyle: "italic", color: "var(--text-secondary)" }}>
-            {renderInlineMarkdown(trimmed.substring(2))}
-          </blockquote>
-        );
-      } else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
-        if (!isInsideList || listType !== "ul") {
-          flushList(`flush-ul-${i}`);
-          isInsideList = true;
-          listType = "ul";
-        }
-        listItems.push(<li key={`li-${i}`} style={{ marginBottom: "0.25rem" }}>{renderInlineMarkdown(trimmed.substring(2))}</li>);
-      } else if (/^\d+\.\s/.test(trimmed)) {
-        if (!isInsideList || listType !== "ol") {
-          flushList(`flush-ol-${i}`);
-          isInsideList = true;
-          listType = "ol";
-        }
-        const textAfterNumber = trimmed.replace(/^\d+\.\s/, "");
-        listItems.push(<li key={`li-${i}`} style={{ marginBottom: "0.25rem" }}>{renderInlineMarkdown(textAfterNumber)}</li>);
-      } else if (trimmed === "") {
-        flushList(`empty-${i}`);
-      } else {
-        flushList(`p-flush-${i}`);
-        blocks.push(<p key={`p-${i}`} style={{ marginBottom: "0.75rem" }}>{renderInlineMarkdown(line)}</p>);
+    processed = processed.replace(/\\\[\s*([\s\S]+?)\s*\\\]/g, (_, math) => {
+      return addPlaceholder(math, true);
+    });
+
+    // 2. Process inline math blocks: \(...\) or $...$
+    processed = processed.replace(/\\\(\s*([\s\S]+?)\s*\\\)/g, (_, math) => {
+      return addPlaceholder(math, false);
+    });
+
+    processed = processed.replace(/\$([^$\n]+?)\$/g, (_, math) => {
+      // Avoid treating simple numbers as currency: e.g. $10 or $2.50
+      if (/^\d+(\.\d+)?$/.test(math)) {
+        return `$${math}$`;
       }
+      return addPlaceholder(math, false);
+    });
+
+    // 3. Process markdown with marked
+    let html = "";
+    try {
+      html = marked.parse(processed) as string;
+    } catch (e) {
+      console.error("Marked parsing error", e);
+      html = processed;
     }
 
-    flushList(`final-${keyPrefix}`);
+    // 4. Restore math placeholders
+    for (let i = 0; i < placeholders.length; i++) {
+      const id = `__MATH_PLACEHOLDER_${i}__`;
+      html = html.split(id).join(placeholders[i]);
+    }
 
-    return <div key={keyPrefix} className="markdown-body">{blocks}</div>;
+    return html;
   };
 
   // Send Chat message handling
@@ -989,7 +941,7 @@ export default function App() {
                       {msg.role === "user" ? (
                         msg.content
                       ) : (
-                        renderBlockMarkdown(msg.content)
+                        <div dangerouslySetInnerHTML={{ __html: renderMarkdownAndMath(msg.content) }} style={{ width: "100%" }} />
                       )}
                     </div>
                   ))
