@@ -177,7 +177,7 @@ body {
 /* Loading Splash Screen */
 .splash-container {
   display: flex;
-  min-h-screen: 100vh;
+  min-height: 100vh;
   height: 100vh;
   flex-direction: column;
   align-items: center;

@@ -385,13 +385,13 @@ export default function App() {
 
       if (trimmed.startsWith("### ")) {
         flushList(`h3-${i}`);
-        blocks.push(<h3 key={`h3-${i}`} style={{ margin: "1rem 0 0.5rem 0", color: "white" }}>{renderInlineMarkdown(trimmed.substring(4))}</h3>);
+        blocks.push(<h3 key={`h3-${i}`} style={{ margin: "1rem 0 0.5rem 0", color: "var(--text-primary)" }}>{renderInlineMarkdown(trimmed.substring(4))}</h3>);
       } else if (trimmed.startsWith("## ")) {
         flushList(`h2-${i}`);
-        blocks.push(<h2 key={`h2-${i}`} style={{ margin: "1.2rem 0 0.6rem 0", color: "white" }}>{renderInlineMarkdown(trimmed.substring(3))}</h2>);
+        blocks.push(<h2 key={`h2-${i}`} style={{ margin: "1.2rem 0 0.6rem 0", color: "var(--text-primary)" }}>{renderInlineMarkdown(trimmed.substring(3))}</h2>);
       } else if (trimmed.startsWith("# ")) {
         flushList(`h1-${i}`);
-        blocks.push(<h1 key={`h1-${i}`} style={{ margin: "1.5rem 0 0.75rem 0", color: "white" }}>{renderInlineMarkdown(trimmed.substring(2))}</h1>);
+        blocks.push(<h1 key={`h1-${i}`} style={{ margin: "1.5rem 0 0.75rem 0", color: "var(--text-primary)" }}>{renderInlineMarkdown(trimmed.substring(2))}</h1>);
       } else if (trimmed.startsWith("> ")) {
         flushList(`bq-${i}`);
         blocks.push(
@@ -546,7 +546,7 @@ export default function App() {
         <div className="splash-container" style={{ overflowY: "auto", padding: "3rem 1.5rem" }}>
           <div className="splash-glow opacity-100" />
           <div style={{ zIndex: 10, width: "100%", maxWidth: "600px", margin: "auto", textAlign: "center" }}>
-            <h1 style={{ fontSize: "2.75rem", fontFamily: "Outfit", fontWeight: 900, color: "white", marginBottom: "0.5rem" }}>
+            <h1 style={{ fontSize: "2.75rem", fontFamily: "Outfit", fontWeight: 900, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
               Gemma Study Companion
             </h1>
             <p style={{ color: "var(--text-secondary)", fontSize: "1rem", marginBottom: "2rem" }}>
@@ -557,7 +557,7 @@ export default function App() {
               <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                 <div style={{ fontSize: "1.5rem" }}>📖</div>
                 <div>
-                  <h3 style={{ color: "white", fontSize: "1.05rem", fontWeight: 600 }}>Syllabus Database</h3>
+                  <h3 style={{ color: "var(--text-primary)", fontSize: "1.05rem", fontWeight: 600 }}>Syllabus Database</h3>
                   <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginTop: "0.25rem" }}>Access the official ASTU CSE course structures, elective badges, and lab requirements.</p>
                 </div>
               </div>
@@ -565,7 +565,7 @@ export default function App() {
               <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                 <div style={{ fontSize: "1.5rem" }}>🎥</div>
                 <div>
-                  <h3 style={{ color: "white", fontSize: "1.05rem", fontWeight: 600 }}>Curated Study Materials</h3>
+                  <h3 style={{ color: "var(--text-primary)", fontSize: "1.05rem", fontWeight: 600 }}>Curated Study Materials</h3>
                   <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginTop: "0.25rem" }}>Quickly browse course textbooks lists, NPTEL courseware, and search YouTube lectures.</p>
                 </div>
               </div>
@@ -573,7 +573,7 @@ export default function App() {
               <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                 <div style={{ fontSize: "1.5rem" }}>💬</div>
                 <div>
-                  <h3 style={{ color: "white", fontSize: "1.05rem", fontWeight: 600 }}>Academic Chat Assistant</h3>
+                  <h3 style={{ color: "var(--text-primary)", fontSize: "1.05rem", fontWeight: 600 }}>Academic Chat Assistant</h3>
                   <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginTop: "0.25rem" }}>Interact with Gemini, OpenAI, Groq, Anthropic, Ollama or LM Studio models.</p>
                 </div>
               </div>
@@ -581,7 +581,7 @@ export default function App() {
               <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                 <div style={{ fontSize: "1.5rem" }}>📂</div>
                 <div>
-                  <h3 style={{ color: "white", fontSize: "1.05rem", fontWeight: 600 }}>Document Analysis</h3>
+                  <h3 style={{ color: "var(--text-primary)", fontSize: "1.05rem", fontWeight: 600 }}>Document Analysis</h3>
                   <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", marginTop: "0.25rem" }}>Attach text or code documents directly to prepend context to your study questions.</p>
                 </div>
               </div>
@@ -612,7 +612,7 @@ export default function App() {
               </button>
             </div>
             <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-              <h2 style={{ fontSize: "2.25rem", fontFamily: "Outfit", fontWeight: 700, color: "white" }}>
+              <h2 style={{ fontSize: "2.25rem", fontFamily: "Outfit", fontWeight: 700, color: "var(--text-primary)" }}>
                 API Configuration
               </h2>
               <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", marginTop: "0.5rem" }}>
