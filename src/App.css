@@ -834,3 +834,202 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================
+   Collapsible Sidebar & Toggle Button Styles
+   ========================================== */
+.sidebar {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+/* Hide labels, logo text and footer text when collapsed */
+.sidebar.collapsed .logo-info,
+.sidebar.collapsed .logo-subtitle,
+.sidebar.collapsed .sidebar-link span {
+  opacity: 0;
+  width: 0;
+  pointer-events: none;
+  display: none !important;
+}
+
+/* Toggle Box styling positioned absolute on edge of sidebar */
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 1.6rem;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background: #ffffff;
+  border: 1px solid var(--divider);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-secondary);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--bg-primary);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+/* Sidebar abbreviation elements when collapsed */
+.sidebar-abbrev {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--primary);
+  background: var(--primary-glow);
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover .sidebar-abbrev,
+.sidebar-link.active .sidebar-abbrev {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 3px 6px rgba(37, 99, 235, 0.15);
+}
+
+/* ==========================================
+   Styled Back Link Button
+   ========================================== */
+.back-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0.45rem 1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--divider);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.back-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--primary);
+  opacity: 0.7;
+  transition: width 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--primary) !important;
+  background: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  transform: translateX(-3px);
+}
+
+.back-link:hover::before {
+  width: 5px;
+}
+
+/* ==========================================
+   Code Box and Inline Code Styles
+   ========================================== */
+.code-block-container {
+  margin: 1.25rem 0;
+  border-radius: 12px;
+  border: 1px solid var(--divider);
+  background: #0f172a; /* Dark slate background for premium feel */
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  color: #cbd5e1;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.code-block-header .copy-btn {
+  background: transparent;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  color: #94a3b8;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.15s ease;
+}
+
+.code-block-header .copy-btn:hover {
+  background: #334155;
+  color: #f8fafc;
+  border-color: #64748b;
+}
+
+.code-block-content {
+  margin: 0;
+  padding: 1.25rem;
+  overflow-x: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', Courier, monospace;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #e2e8f0;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.code-block-content code {
+  font-family: inherit;
+  color: inherit;
+}
+
+.inline-code {
+  font-family: 'Consolas', 'Monaco', 'Courier New', Courier, monospace;
+  background: rgba(15, 23, 42, 0.06);
+  color: #c2410c; /* High contrast orange for readability in light mode */
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}

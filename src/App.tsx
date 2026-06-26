@@ -9,6 +9,8 @@ import {
   XCircle,
   AlertTriangle,
   ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   Message,
@@ -144,6 +146,7 @@ export default function App() {
   const [settings, setSettings] = useState<GenerationSettings>(DEFAULT_SETTINGS);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [hasConfig, setHasConfig] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   // Chat States for Q&A view
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
@@ -640,13 +643,27 @@ export default function App() {
   return (
     <div className="app-container">
       {/* Sidebar Layout */}
-      <aside className="sidebar">
-        <div className="sidebar-header" onClick={navigateHome} style={{ cursor: "pointer" }}>
+      <aside className={`sidebar ${isSidebarCollapsed ? "collapsed" : ""}`}>
+        {/* Toggle Box / Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsSidebarCollapsed(!isSidebarCollapsed);
+          }}
+          className="sidebar-toggle-btn"
+          aria-label={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+
+        <div className="sidebar-header" onClick={navigateHome} style={{ cursor: "pointer", justifyContent: isSidebarCollapsed ? "center" : "flex-start" }}>
           <div className="logo-circle">B</div>
-          <div className="logo-info">
-            <span className="logo-title">BVEC Study Hub</span>
-            <span className="logo-subtitle">Semesters</span>
-          </div>
+          {!isSidebarCollapsed && (
+            <div className="logo-info">
+              <span className="logo-title">BVEC Study Hub</span>
+              <span className="logo-subtitle">Semesters</span>
+            </div>
+          )}
         </div>
 
         <nav className="sidebar-nav" aria-label="Semester list selection">
@@ -655,16 +672,37 @@ export default function App() {
               key={sem}
               className={`sidebar-link ${currentSemester === sem ? "active" : ""}`}
               onClick={() => selectSemester(sem)}
+              style={{
+                justifyContent: isSidebarCollapsed ? "center" : "flex-start",
+                padding: isSidebarCollapsed ? "0.75rem 0" : "0.75rem 1rem",
+              }}
+              title={isSidebarCollapsed ? formatTitle(sem) : undefined}
             >
-              {formatTitle(sem)}
+              {isSidebarCollapsed ? (
+                <span className="sidebar-abbrev">
+                  {sem === "Bridge_Courses" ? "BC" : sem.replace("Semester_", "S")}
+                </span>
+              ) : (
+                <span>{formatTitle(sem)}</span>
+              )}
             </div>
           ))}
         </nav>
 
-        <div className="sidebar-footer">
-          <button className="sidebar-link" onClick={() => setIsSettingsOpen(true)} style={{ width: "100%", justifyContent: "flex-start", gap: "0.5rem" }}>
+        <div className="sidebar-footer" style={{ padding: isSidebarCollapsed ? "0.75rem 0.5rem" : "1.25rem" }}>
+          <button
+            className="sidebar-link"
+            onClick={() => setIsSettingsOpen(true)}
+            style={{
+              width: "100%",
+              justifyContent: isSidebarCollapsed ? "center" : "flex-start",
+              gap: "0.5rem",
+              padding: isSidebarCollapsed ? "0.75rem 0" : "0.75rem 1rem",
+            }}
+            title={isSidebarCollapsed ? "Settings" : undefined}
+          >
             <Settings size={16} />
-            Settings
+            {!isSidebarCollapsed && <span>Settings</span>}
           </button>
         </div>
       </aside>
