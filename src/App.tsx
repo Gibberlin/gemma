@@ -82,7 +82,7 @@ const DEFAULT_SETTINGS: GenerationSettings = {
   model: "gemini-2.5-flash",
   temperature: 0.7,
   systemInstruction:
-    "You are a helpful, precise academic assistant aligned with the official ASTU CSE syllabus. Address the user's questions clearly, showing code snippets where appropriate, and cite the syllabus where relevant.",
+    "You are a helpful, precise academic assistant aligned with the official ASTU CSE syllabus. Address the user's questions clearly, showing code snippets where appropriate, and cite the syllabus where relevant. IMPORTANT: For ALL mathematical formulas, equations, or scientific expressions, you MUST use standard LaTeX notation. Wrap display/block equations in double dollar signs ($$...$$) and inline expressions in single dollar signs ($...$). Do not use raw unicode or escaped text characters for formulas; write them in clean LaTeX so they can be rendered correctly by KaTeX.",
   customEndpoint: "",
 };
 
@@ -207,6 +207,13 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         const merged = { ...DEFAULT_SETTINGS, ...parsed };
+        
+        // Force system instruction update if it does not mention LaTeX
+        if (!merged.systemInstruction || !merged.systemInstruction.includes("LaTeX")) {
+          merged.systemInstruction = DEFAULT_SETTINGS.systemInstruction;
+          localStorage.setItem("gemma_settings", JSON.stringify(merged));
+        }
+
         setSettings(merged);
         const configured = !!merged.provider && (merged.provider.startsWith("local") ? !!merged.customEndpoint : !!merged.apiKey);
         setHasConfig(configured);
