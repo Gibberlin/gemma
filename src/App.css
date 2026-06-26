@@ -5,35 +5,35 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
-  color: #f1f5f9;
-  background-color: #0f172a; /* Slate 900 */
+  color-scheme: light;
+  color: #1e293b;
+  background-color: #fcfbfa;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* CSS Variables aligned with Vercel App styling */
-  --bg-primary: #0f172a;
-  --bg-surface: #1e293b; /* Slate 800 */
-  --bg-surface-hover: #334155; /* Slate 700 */
-  --divider: #334155;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
+  /* CSS Variables for Light Theme with Glassmorphic overlays */
+  --bg-primary: #f8fafc;
+  --bg-surface: rgba(255, 255, 255, 0.7);
+  --bg-surface-hover: rgba(255, 255, 255, 0.85);
+  --divider: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
   --text-muted: #64748b;
-  --primary: #2563eb; /* Blue 600 */
+  --primary: #2563eb;
   --primary-hover: #1d4ed8;
-  --primary-glow: rgba(37, 99, 235, 0.15);
-  --accent-teal: #10b981; /* Emerald 500 */
-  --danger: #ef4444;
-  --danger-weak: rgba(239, 68, 68, 0.1);
-  --primary-weak: rgba(37, 99, 235, 0.1);
+  --primary-glow: rgba(37, 99, 235, 0.1);
+  --accent-teal: #059669;
+  --danger: #dc2626;
+  --danger-weak: rgba(220, 38, 38, 0.08);
+  --primary-weak: rgba(37, 99, 235, 0.06);
   
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.2);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.08);
 }
 
 * {
@@ -46,8 +46,12 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
-  background-color: var(--bg-primary);
-  background-image: radial-gradient(circle at 50% 120%, #1e1b4b 0%, #0f172a 70%);
+  background: linear-gradient(rgba(252, 251, 250, 0.88), rgba(252, 251, 250, 0.88)), url('/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #fcfbfa;
+  color: var(--text-primary);
 }
 
 #root {
@@ -67,7 +71,7 @@ body {
 /* Glassmorphism sidebar */
 .sidebar {
   width: 260px;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(16px);
   border-right: 1px solid var(--divider);
   display: flex;
@@ -178,7 +182,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-primary);
+  background-color: transparent;
   position: relative;
   overflow: hidden;
 }
@@ -190,7 +194,7 @@ body {
   transform: translate(-50%, -50%);
   width: 35rem;
   height: 35rem;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, rgba(20, 184, 166, 0.05) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(20, 184, 166, 0.02) 50%, transparent 70%);
   border-radius: 50%;
   filter: blur(60px);
   pointer-events: none;
@@ -217,10 +221,10 @@ body {
   font-size: 5.5rem;
   font-weight: 900;
   letter-spacing: -0.05em;
-  background: linear-gradient(135deg, #2563eb, #ef4444, #3b82f6);
+  background: linear-gradient(135deg, #2563eb, #dc2626, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
 }
 
 .splash-subtitle {
@@ -316,8 +320,8 @@ body {
 
 .card-hover:hover {
   transform: translateY(-2px);
-  border-color: rgba(37, 99, 235, 0.5);
-  background: var(--bg-surface-hover);
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .card-title {
@@ -348,23 +352,23 @@ body {
   font-size: 0.75rem;
   font-weight: 600;
   border: 1px solid var(--divider);
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.04);
   color: var(--text-secondary);
 }
 
 .badge-elective {
-  background-color: rgba(99, 102, 241, 0.1);
-  color: #818cf8; /* Indigo 400 */
+  background-color: rgba(99, 102, 241, 0.08);
+  color: #4f46e5; /* Indigo 600 */
 }
 
 .badge-track {
-  background-color: rgba(249, 115, 22, 0.1);
-  color: #fb923c; /* Orange 400 */
+  background-color: rgba(249, 115, 22, 0.08);
+  color: #ea580c; /* Orange 600 */
 }
 
 .badge-lab {
-  background-color: rgba(16, 185, 129, 0.1);
-  color: #34d399; /* Emerald 400 */
+  background-color: rgba(16, 185, 129, 0.08);
+  color: #059669; /* Emerald 600 */
 }
 
 /* Subject Split Layout Card (Materials / QA) */
@@ -383,7 +387,7 @@ body {
 }
 
 .ref-box {
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.6);
   border: 1px solid var(--divider);
   padding: 1.25rem;
   border-radius: 12px;
@@ -417,7 +421,7 @@ body {
 }
 
 .book-card {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.6);
   border: 1px solid var(--divider);
   padding: 1rem 1.25rem;
   border-radius: 12px;
@@ -435,6 +439,7 @@ body {
   border-radius: 16px;
   overflow: hidden;
   background: var(--bg-surface);
+  backdrop-filter: blur(12px);
   width: 100%;
 }
 
@@ -477,15 +482,15 @@ body {
 
 .chat-bubble.assistant {
   align-self: flex-start;
-  background: var(--bg-primary);
-  border: 1px solid var(--divider);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
   color: var(--text-primary);
   border-radius: 18px;
   border-top-left-radius: 4px;
   padding: 0.75rem 1.25rem;
   font-size: 0.92rem;
   line-height: 1.5;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   width: fit-content;
   max-width: 92%;
 }
@@ -494,7 +499,7 @@ body {
 .qa-input-bar {
   padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--divider);
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(8px);
   display: flex;
   flex-direction: column;
@@ -587,7 +592,7 @@ body {
 
 .qa-textarea {
   flex: 1;
-  background: var(--bg-primary);
+  background: #ffffff;
   border: 1px solid var(--divider);
   border-radius: 12px;
   padding: 0.65rem 0.85rem;
@@ -657,7 +662,7 @@ body {
 
 /* Form selects, textareas, inputs in page contexts */
 .settings-input, .settings-select, .settings-textarea {
-  background: var(--bg-primary);
+  background: #ffffff;
   border: 1px solid var(--divider);
   border-radius: 10px;
   padding: 0.65rem 0.85rem;
@@ -718,7 +723,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(5, 7, 12, 0.75);
+  background: rgba(15, 23, 42, 0.35);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -728,7 +733,7 @@ body {
 }
 
 .modal-content {
-  background: var(--bg-surface);
+  background: #ffffff;
   border: 1px solid var(--divider);
   border-radius: 20px;
   box-shadow: var(--shadow-lg), var(--shadow-glow);
