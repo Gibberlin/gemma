@@ -346,7 +346,7 @@
         "Project-1": {
           "course_code": "CSE181722",
           "pdf": "https://astu.ac.in/wp-content/uploads/7th-semester-CSE.pdf",
-          "project_info": "6 Credits (0-0-12). Initial system design, requirement gathering, and architectural planning for a capstone implementation. Guidelines will be issued by the university from time to time."
+          "project_info": "6 Credits (0-0-12). Initial system design, requirement gathering, and architectural planning for a capstone implementation."
         }
       }
     },
@@ -437,7 +437,7 @@
         "Project-2": {
           "course_code": "CSE181822",
           "pdf": "https://astu.ac.in/wp-content/uploads/8th-SEM-CSE-Final.pdf",
-          "project_info": "6 Credits (0-0-12). Capstone project involving design, development, and evaluation of a complete system. Guidelines will be issued by the university from time to time."
+          "project_info": "6 Credits (0-0-12). Capstone project involving design, development, and evaluation of a complete system."
         }
       }
     }
