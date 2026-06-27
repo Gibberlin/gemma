@@ -24,6 +24,8 @@ interface NoteFormModalProps {
     subjectName: string;
     format: string;
     content?: string;
+    filePath?: string;
+    isDocument?: boolean;
   }) => void;
   syllabus: SyllabusData | null;
   prefilledData?: {
@@ -33,6 +35,8 @@ interface NoteFormModalProps {
     subjectName?: string;
     format?: string;
     content?: string;
+    filePath?: string;
+    isDocument?: boolean;
   };
   isUpload?: boolean;
 }
@@ -116,6 +120,8 @@ export default function NoteFormModal({
       subjectName: currentSubject.name,
       format: selectedFormat,
       content: prefilledData.content || "", // Preserve content if uploaded
+      filePath: prefilledData.filePath,
+      isDocument: prefilledData.isDocument,
     });
   };
 

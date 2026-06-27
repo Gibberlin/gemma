@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Notebook,
-  LogOut,
   Plus,
   Trash2,
   Search,
@@ -18,7 +17,9 @@ import {
   Cloud,
   Database,
   UploadCloud,
-  Sparkles
+  Sparkles,
+  User,
+  LogOut
 } from "lucide-react";
 import {
   Message,
@@ -30,7 +31,7 @@ import ConfigurationPanel from "./components/ConfigurationPanel";
 import LoginScreen from "./components/LoginScreen";
 import NoteFormModal from "./components/NoteFormModal";
 import AdBanner from "./components/AdBanner";
-import { onAuthChanged, signOutUser } from "./firebase";
+import { onAuthChanged, signOutUser, isFirebaseConfigured } from "./firebase";
 import {
   Note,
   SavedChat,
@@ -144,8 +145,8 @@ function SplashScreen({ onFinish }: { onFinish: () => void }) {
       <div className={`splash-glow ${active ? "opacity-100" : "opacity-0"}`} />
       <div className="splash-content">
         <div className="splash-title-wrap">
-          <h1 className="splash-title">Gemma</h1>
-          <p className="splash-subtitle">Study Assistant</p>
+          <h1 className="splash-title">Senku</h1>
+          <p className="splash-subtitle">Study Companion</p>
         </div>
         <div className="splash-bars">
           {Array.from({ length: 12 }).map((_, idx) => (
@@ -177,6 +178,7 @@ export default function App() {
   // Settings configurations
   const [settings, setSettings] = useState<GenerationSettings>(DEFAULT_SETTINGS);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [hasConfig, setHasConfig] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
@@ -209,6 +211,11 @@ export default function App() {
   const [notesSubjectFilter, setNotesSubjectFilter] = useState("");
   const saveTimeoutRef = useRef<any>(null);
 
+  // --- Quick Notes States ---
+  const [quickNotes, setQuickNotes] = useState<Array<{ id: string; text?: string; image?: string; createdAt: number }>>([]);
+  const [quickNoteText, setQuickNoteText] = useState("");
+  const [pastedImageSrc, setPastedImageSrc] = useState<string | null>(null);
+
   // --- Notes Form Modal States ---
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isFormModalUpload, setIsFormModalUpload] = useState(false);
@@ -224,7 +231,7 @@ export default function App() {
   // Load static files, notes and configurations on mount
   useEffect(() => {
     // Define global copy helper on window for markdown code blocks
-    (window as any).copyGemmaCode = (btn: HTMLButtonElement, containerId: string) => {
+    (window as any).copySenkuCode = (btn: HTMLButtonElement, containerId: string) => {
       const container = document.getElementById(containerId);
       const codeEl = container?.querySelector("code");
       if (codeEl) {
@@ -308,6 +315,125 @@ export default function App() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages, isGenerating]);
+
+  // Load Quick Notes when subject changes
+  useEffect(() => {
+    if (currentSubject) {
+      const saved = localStorage.getItem(`senku_quick_notes_${currentSubject.course_code || currentSubject.name}`);
+      if (saved) {
+        try {
+          setQuickNotes(JSON.parse(saved));
+        } catch (e) {
+          setQuickNotes([]);
+        }
+      } else {
+        setQuickNotes([]);
+      }
+    }
+  }, [currentSubject]);
+
+  // Save quick notes when changed
+  useEffect(() => {
+    if (currentSubject) {
+      localStorage.setItem(
+        `senku_quick_notes_${currentSubject.course_code || currentSubject.name}`,
+        JSON.stringify(quickNotes)
+      );
+    }
+  }, [quickNotes, currentSubject]);
+
+  const compressImage = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          
+          // Max dimension 800px to maintain crispness but minimize storage sizes
+          const maxDim = 800;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Compress to JPEG with 0.7 quality (~25KB typical output)
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+          resolve(compressedBase64);
+        };
+        img.onerror = () => reject(new Error("Failed to load image"));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleQuickNotePaste = async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        e.preventDefault();
+        const file = items[i].getAsFile();
+        if (!file) continue;
+        
+        try {
+          const compressedUrl = await compressImage(file);
+          setPastedImageSrc(compressedUrl);
+        } catch (err) {
+          console.error("Failed to compress pasted image:", err);
+        }
+        break; // Process one image at a time
+      }
+    }
+  };
+
+  const handleAddQuickNote = () => {
+    if (!quickNoteText.trim() && !pastedImageSrc) return;
+    const newQuickNote = {
+      id: `qn-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      text: quickNoteText.trim() || undefined,
+      image: pastedImageSrc || undefined,
+      createdAt: Date.now()
+    };
+    setQuickNotes(prev => [newQuickNote, ...prev]);
+    setQuickNoteText("");
+    setPastedImageSrc(null);
+  };
+
+  const handleDeleteQuickNote = (id: string) => {
+    setQuickNotes(prev => prev.filter(qn => qn.id !== id));
+  };
+
+  const handleClearQuickNotes = () => {
+    if (confirm("Are you sure you want to clear all quick notes for this subject?")) {
+      setQuickNotes([]);
+    }
+  };
+
+  const handleOpenQuickNoteImage = (dataUrl: string) => {
+    const win = window.open();
+    win?.document.write(`
+      <html>
+        <head><title>Quick Note Image Preview</title></head>
+        <body style="margin:0;display:flex;align-items:center;justify-content:center;background:#111827;height:100vh;">
+          <img src="${dataUrl}" style="max-width:95%;max-height:95%;box-shadow:0 10px 25px rgba(0,0,0,0.55);border-radius:8px;border:1px solid rgba(255,255,255,0.1);" />
+        </body>
+      </html>
+    `);
+  };
 
   // Clean title for display (e.g. Semester_3 -> Semester 3)
   const formatTitle = (title: string | null) => {
@@ -394,7 +520,7 @@ export default function App() {
       <div class="code-block-container" id="${blockId}">
         <div class="code-block-header">
           <span>${language.toUpperCase()}</span>
-          <button onclick="window.copyGemmaCode(this, '${blockId}')" class="copy-btn">
+          <button onclick="window.copySenkuCode(this, '${blockId}')" class="copy-btn">
             <span>Copy</span>
           </button>
         </div>
@@ -510,18 +636,44 @@ export default function App() {
     if (!files || files.length === 0) return;
     const file = files[0];
     const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      if (content !== undefined) {
+    reader.onload = async (event) => {
+      const arrayBuffer = event.target?.result as ArrayBuffer;
+      if (arrayBuffer !== undefined) {
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const binaryData = Array.from(uint8Array);
+        
+        let filePath = "";
+        try {
+          if ((window as any).__TAURI_INTERNALS__) {
+            const { invoke } = await import("@tauri-apps/api/core");
+            filePath = await invoke("save_document_file", { name: file.name, data: binaryData });
+          } else {
+            // Browser demo mode fallback: save a data URL (limited size but works for mock testing)
+            if (file.size > 500 * 1024) {
+              filePath = `[Local File: ${file.name} (${Math.round(file.size / 1024)} KB) - File too large for browser storage. Use desktop app to open natively.]`;
+            } else {
+              filePath = `data:${file.type || "application/octet-stream"};base64,${btoa(
+                binaryData.reduce((data, byte) => data + String.fromCharCode(byte), "")
+              )}`;
+            }
+          }
+        } catch (err) {
+          console.error("Failed to save document:", err);
+          filePath = `[Error saving local file: ${file.name}]`;
+        }
+
+        // Set form modal prefill with document metadata
         setFormModalPrefill({
           title: file.name.substring(0, file.name.lastIndexOf('.')) || file.name,
-          content: content,
+          content: filePath,
+          filePath: filePath,
+          isDocument: true,
         });
         setIsFormModalUpload(true);
         setIsFormModalOpen(true);
       }
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
     if (uploadFileInputRef.current) uploadFileInputRef.current.value = "";
   };
 
@@ -533,6 +685,8 @@ export default function App() {
     subjectName: string;
     format: string;
     content?: string;
+    filePath?: string;
+    isDocument?: boolean;
   }) => {
     const newNote = createNote({
       title: data.title,
@@ -541,6 +695,8 @@ export default function App() {
       subjectCode: data.subjectCode,
       subjectName: data.subjectName,
       format: data.format,
+      filePath: data.filePath,
+      isDocument: data.isDocument,
     });
     setNotes(getNotes());
     setSelectedNoteId(newNote.id);
@@ -793,7 +949,7 @@ export default function App() {
 
   // Render Splash Screen
   if (view === "splash") {
-    return <SplashScreen onFinish={() => setView(hasConfig ? "home" : "introduction")} />;
+    return <SplashScreen onFinish={() => setView("home")} />;
   }
 
   // Auth Guard: Render Login Screen if not authenticated
@@ -802,7 +958,7 @@ export default function App() {
       <LoginScreen
         onLoginSuccess={(user) => {
           setCurrentUser(user);
-          setView(hasConfig ? "home" : "introduction");
+          setView("home");
         }}
       />
     );
@@ -815,7 +971,7 @@ export default function App() {
         <div className="splash-glow opacity-100" />
         <div className="splash-content">
           <div className="splash-title-wrap">
-            <h1 className="splash-title">Gemma</h1>
+            <h1 className="splash-title">Senku</h1>
             <p className="splash-subtitle">Checking Authentication...</p>
           </div>
         </div>
@@ -831,10 +987,10 @@ export default function App() {
           <div className="splash-glow opacity-100" />
           <div style={{ zIndex: 10, width: "100%", maxWidth: "600px", margin: "auto", textAlign: "center" }}>
             <h1 style={{ fontSize: "2.75rem", fontFamily: "Outfit", fontWeight: 900, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
-              Gemma Study Companion
+              Senku Study Companion
             </h1>
             <p style={{ color: "var(--text-secondary)", fontSize: "1rem", marginBottom: "2rem" }}>
-              Your desktop syllabus assistant and materials guide
+              Your desktop syllabus assistant and science workspace
             </p>
             
             <div className="card" style={{ padding: "2rem", textAlign: "left", marginBottom: "2rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -938,10 +1094,12 @@ export default function App() {
         </button>
 
         <div className="sidebar-header" onClick={navigateHome} style={{ cursor: "pointer", justifyContent: isSidebarCollapsed ? "center" : "flex-start" }}>
-          <div className="logo-circle">B</div>
+          <div className="logo-circle" style={{ overflow: "hidden", background: "transparent", border: "none" }}>
+            <img src="/logo.png" alt="Senku Study Companion Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "10px" }} />
+          </div>
           {!isSidebarCollapsed && (
             <div className="logo-info">
-              <span className="logo-title">BVEC Study Hub</span>
+              <span className="logo-title">Senku Study Companion</span>
               <span className="logo-subtitle">Semesters</span>
             </div>
           )}
@@ -992,12 +1150,26 @@ export default function App() {
         </nav>
 
         <div className="sidebar-footer" style={{ padding: isSidebarCollapsed ? "0.75rem 0.5rem" : "1.25rem" }}>
-          {!isSidebarCollapsed && currentUser && (
-            <div className="user-profile-info" style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginBottom: "0.5rem", padding: "0 0.5rem" }}>
-              <span className="user-email" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", opacity: 0.8 }} title={currentUser.email}>
-                {currentUser.email}
-              </span>
-            </div>
+          {currentUser && (
+            <button
+              className="sidebar-link"
+              onClick={() => setIsAccountOpen(true)}
+              style={{
+                width: "100%",
+                justifyContent: isSidebarCollapsed ? "center" : "flex-start",
+                gap: "0.5rem",
+                padding: isSidebarCollapsed ? "0.75rem 0" : "0.75rem 1rem",
+                color: "var(--text-primary)",
+              }}
+              title={isSidebarCollapsed ? `Account Settings (${currentUser.displayName || currentUser.email?.split("@")[0] || 'User'})` : `Account Settings`}
+            >
+              <User size={16} style={{ color: "var(--primary)" }} />
+              {!isSidebarCollapsed && (
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "160px", fontSize: "0.85rem" }}>
+                  {currentUser.displayName || currentUser.email?.split("@")[0] || "User"}
+                </span>
+              )}
+            </button>
           )}
           
           <button
@@ -1013,27 +1185,6 @@ export default function App() {
           >
             <Settings size={16} />
             {!isSidebarCollapsed && <span>Settings</span>}
-          </button>
-
-          <button
-            className="sidebar-link"
-            onClick={async () => {
-              if (confirm("Are you sure you want to log out?")) {
-                await signOutUser();
-                setView("splash");
-              }
-            }}
-            style={{
-              width: "100%",
-              justifyContent: isSidebarCollapsed ? "center" : "flex-start",
-              gap: "0.5rem",
-              padding: isSidebarCollapsed ? "0.75rem 0" : "0.75rem 1rem",
-              color: "var(--danger)",
-            }}
-            title={isSidebarCollapsed ? "Log Out" : undefined}
-          >
-            <LogOut size={16} />
-            {!isSidebarCollapsed && <span>Log Out</span>}
           </button>
         </div>
       </aside>
@@ -1051,7 +1202,7 @@ export default function App() {
         {view === "home" && (
           <div className="page-wrapper">
             <header className="page-header" style={{ marginBottom: "2.5rem" }}>
-              <h1 className="page-title">Gemma Study Companion 🤖</h1>
+              <h1 className="page-title">Senku Study Companion 🧪</h1>
               <p className="page-subtitle" style={{ fontSize: "1.15rem", opacity: 0.8 }}>
                 Choose a semester, then pick a subject.
               </p>
@@ -1151,7 +1302,7 @@ export default function App() {
               <div className="card card-hover" onClick={() => { setChatMessages([]); setActiveSavedChatId(null); setView("qa"); }}>
                 <div className="card-title">Subject Q&amp;A</div>
                 <div className="card-desc">
-                  Ask questions related to this subject and get immediate answers from an LLM based on Gemma.
+                  Ask questions related to this subject and get immediate answers from Senku's AI assistant.
                   <span style={{ display: "block", color: "var(--primary)", marginTop: "0.5rem", fontSize: "0.8rem" }}>
                     Uses your configured API connection settings.
                   </span>
@@ -1403,6 +1554,27 @@ export default function App() {
               )}
             </header>
 
+            {!hasConfig && (
+              <div className="login-warning-box shrink-0" style={{ margin: "0 0 0.75rem 0", padding: "0.75rem 1rem", borderRadius: "12px", background: "rgba(249, 115, 22, 0.08)", border: "1px solid rgba(249, 115, 22, 0.3)", color: "#ea580c", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                <AlertTriangle size={16} className="warning-icon" style={{ color: "#ea580c", flexShrink: 0 }} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: "1rem", flexWrap: "wrap" }}>
+                  <div>
+                    <div className="warning-title" style={{ fontSize: "0.85rem", fontWeight: 600, color: "#c2410c" }}>API Connection Not Configured</div>
+                    <div className="warning-desc" style={{ fontSize: "0.75rem", marginTop: "0.15rem", color: "#ea580c" }}>
+                      To converse with the model, please setup a Local server or Cloud API in configuration.
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setIsSettingsOpen(true)}
+                    className="action-btn-primary" 
+                    style={{ fontSize: "0.75rem", padding: "0.35rem 0.75rem", borderRadius: "6px", background: "#ea580c", color: "white", border: "none", cursor: "pointer", fontWeight: 600 }}
+                  >
+                    Configure Settings
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Subject Context Header Card */}
             <div className="card shrink-0" style={{ padding: "1rem 1.25rem", marginBottom: "0.75rem" }}>
               <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)", textTransform: "uppercase" }}>
@@ -1414,9 +1586,11 @@ export default function App() {
             </div>
 
             {/* Chat Dialog Pane */}
-            <div className="qa-layout">
-              {/* Messages container */}
-              <div className="qa-messages-box">
+            <div className="qa-layout" style={{ display: "flex", flexDirection: "row", height: "calc(100vh - 12rem)", minHeight: "450px", overflow: "hidden" }}>
+              {/* Chat Panel */}
+              <div className="qa-chat-pane" style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%", overflow: "hidden", borderRight: "1px solid var(--divider)" }}>
+                {/* Messages container */}
+                <div className="qa-messages-box">
                 {chatMessages.length === 0 ? (
                   <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.9rem", marginTop: "4rem" }}>
                     Ask any question related to the syllabus of this subject. Try typing <strong style={{ color: "var(--primary)" }}>/</strong> for special commands.
@@ -1634,6 +1808,120 @@ export default function App() {
                     >
                       <Send size={16} />
                     </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Notes Side-Panel */}
+              <div className="qa-notes-pane" style={{ width: "360px", display: "flex", flexDirection: "column", height: "100%", background: "rgba(255,255,255,0.015)", overflow: "hidden" }}>
+                {/* Header */}
+                <div style={{ padding: "0.85rem 1rem", borderBottom: "1px solid var(--divider)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(0,0,0,0.03)", flexShrink: 0 }}>
+                  <span style={{ fontWeight: 600, fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.4rem", color: "var(--primary)" }}>
+                    <Notebook size={14} />
+                    <span>Subject Quick Notes</span>
+                  </span>
+                  {quickNotes.length > 0 && (
+                    <button 
+                      onClick={handleClearQuickNotes}
+                      style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", display: "inline-flex", padding: "0.25rem", borderRadius: "4px" }}
+                      title="Clear all quick notes"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Paste & Input Area */}
+                <div style={{ padding: "0.75rem", borderBottom: "1px solid var(--divider)", display: "flex", flexDirection: "column", gap: "0.5rem", flexShrink: 0 }}>
+                  <textarea
+                    value={quickNoteText}
+                    onChange={(e) => setQuickNoteText(e.target.value)}
+                    onPaste={handleQuickNotePaste}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAddQuickNote();
+                      }
+                    }}
+                    placeholder="Type note or paste image (Ctrl+V) from clipboard here..."
+                    style={{
+                      width: "100%",
+                      minHeight: "70px",
+                      maxHeight: "100px",
+                      padding: "0.5rem 0.6rem",
+                      background: "var(--bg-primary)",
+                      border: "1px solid var(--divider)",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                      outline: "none",
+                      color: "var(--text-primary)",
+                      resize: "none"
+                    }}
+                  />
+                  {pastedImageSrc && (
+                    <div style={{ position: "relative", display: "inline-block", marginTop: "0.25rem", alignSelf: "flex-start" }}>
+                      <img src={pastedImageSrc} alt="Pasted preview" style={{ maxHeight: "80px", borderRadius: "6px", border: "1px solid var(--divider)" }} />
+                      <button 
+                        onClick={() => setPastedImageSrc(null)}
+                        style={{ position: "absolute", top: "-5px", right: "-5px", background: "var(--danger)", color: "white", border: "none", borderRadius: "50%", width: "16px", height: "16px", fontSize: "10px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}
+                        title="Remove image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>Supports image clipboard paste</span>
+                    <button 
+                      onClick={handleAddQuickNote}
+                      className="action-btn-primary" 
+                      style={{ fontSize: "0.7rem", padding: "0.25rem 0.6rem", borderRadius: "4px", background: "var(--primary)", color: "white", border: "none", cursor: "pointer", fontWeight: 600 }}
+                    >
+                      Add Note
+                    </button>
+                  </div>
+                </div>
+
+                {/* Notes List */}
+                <div style={{ flex: 1, overflowY: "auto", padding: "0.75rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  {quickNotes.length === 0 ? (
+                    <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.75rem", marginTop: "3rem", padding: "0 1rem", lineHeight: 1.5 }}>
+                      No quick notes for this subject yet.<br/>Type here or paste screenshots directly into the box!
+                    </div>
+                  ) : (
+                    quickNotes.map((qn) => (
+                      <div key={qn.id} className="card" style={{ padding: "0.6rem 0.75rem", position: "relative", display: "flex", flexDirection: "column", gap: "0.3rem", border: "1px solid var(--divider)", borderRadius: "8px", background: "rgba(255,255,255,0.01)" }}>
+                        <button
+                          onClick={() => handleDeleteQuickNote(qn.id)}
+                          style={{ position: "absolute", top: "0.4rem", right: "0.4rem", opacity: 0.6, background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer" }}
+                          title="Delete snippet"
+                        >
+                          <XCircle size={11} />
+                        </button>
+                        <div style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>
+                          {new Date(qn.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        {qn.text && (
+                          <div style={{ fontSize: "0.8rem", color: "var(--text-primary)", whiteSpace: "pre-wrap", wordBreak: "break-word", paddingRight: "1.2rem", lineHeight: 1.4 }}>
+                            {qn.text}
+                          </div>
+                        )}
+                        {qn.image && (
+                          <div 
+                            style={{ marginTop: "0.25rem", borderRadius: "6px", overflow: "hidden", border: "1px solid var(--divider)", cursor: "pointer" }} 
+                            onClick={() => qn.image && handleOpenQuickNoteImage(qn.image)}
+                            title="Click to view image in full size"
+                          >
+                            <img 
+                              src={qn.image} 
+                              alt="Quick note content" 
+                              style={{ width: "100%", maxHeight: "150px", objectFit: "contain", background: "var(--bg-primary)" }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
@@ -1906,15 +2194,43 @@ export default function App() {
                         )}
                       </div>
 
-                      {/* Title Edit */}
-                      <input
-                        type="text"
-                        value={activeNote.title}
-                        onChange={(e) => handleUpdateNoteTitle(e.target.value)}
-                        className="note-title-editor"
-                        placeholder="Untitled Note"
-                        style={{ width: "100%", border: "none", background: "transparent", color: "var(--text-primary)", fontSize: "1.5rem", fontWeight: 700, outline: "none", marginBottom: "0.25rem" }}
-                      />
+                      {/* Title Edit Row */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem", gap: "1rem" }}>
+                        <input
+                          type="text"
+                          value={activeNote.title}
+                          onChange={(e) => handleUpdateNoteTitle(e.target.value)}
+                          className="note-title-editor"
+                          placeholder="Untitled Note"
+                          style={{ flex: 1, border: "none", background: "transparent", color: "var(--text-primary)", fontSize: "1.5rem", fontWeight: 700, outline: "none" }}
+                        />
+                        <button
+                          onClick={() => {
+                            if (confirm(`Are you sure you want to delete the note "${activeNote.title}"?`)) {
+                              handleDeleteNoteState(activeNote.id);
+                            }
+                          }}
+                          className="action-btn-danger"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.35rem",
+                            padding: "0.4rem 0.8rem",
+                            background: "rgba(239, 68, 68, 0.1)",
+                            color: "#ef4444",
+                            border: "1px solid rgba(239, 68, 68, 0.2)",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            transition: "all 0.2s"
+                          }}
+                          title="Delete Note"
+                        >
+                          <Trash2 size={13} />
+                          <span>Delete Note</span>
+                        </button>
+                      </div>
 
                       {/* Meta Tags Details */}
                       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1rem" }}>
@@ -1924,44 +2240,108 @@ export default function App() {
                       </div>
 
                       {/* Tab modes */}
-                      <div className="editor-tabs-row" style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--divider)", marginBottom: "0.75rem", paddingBottom: "0.25rem" }}>
-                        <button
-                          className={`editor-tab-btn ${editorMode === "write" ? "active" : ""}`}
-                          onClick={() => setEditorMode("write")}
-                          style={{
-                            padding: "0.3rem 0.6rem",
-                            fontSize: "0.8rem",
-                            fontWeight: 600,
-                            background: editorMode === "write" ? "var(--primary-weak)" : "transparent",
-                            border: "none",
-                            borderRadius: "6px",
-                            color: editorMode === "write" ? "var(--primary)" : "var(--text-secondary)",
-                            cursor: "pointer"
-                          }}
-                        >
-                          Write (Markdown)
-                        </button>
-                        <button
-                          className={`editor-tab-btn ${editorMode === "preview" ? "active" : ""}`}
-                          onClick={() => setEditorMode("preview")}
-                          style={{
-                            padding: "0.3rem 0.6rem",
-                            fontSize: "0.8rem",
-                            fontWeight: 600,
-                            background: editorMode === "preview" ? "var(--primary-weak)" : "transparent",
-                            border: "none",
-                            borderRadius: "6px",
-                            color: editorMode === "preview" ? "var(--primary)" : "var(--text-secondary)",
-                            cursor: "pointer"
-                          }}
-                        >
-                          Preview Math &amp; Markdown
-                        </button>
-                      </div>
+                      {!activeNote.isDocument && (
+                        <div className="editor-tabs-row" style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--divider)", marginBottom: "0.75rem", paddingBottom: "0.25rem" }}>
+                          <button
+                            className={`editor-tab-btn ${editorMode === "write" ? "active" : ""}`}
+                            onClick={() => setEditorMode("write")}
+                            style={{
+                              padding: "0.3rem 0.6rem",
+                              fontSize: "0.8rem",
+                              fontWeight: 600,
+                              background: editorMode === "write" ? "var(--primary-weak)" : "transparent",
+                              border: "none",
+                              borderRadius: "6px",
+                              color: editorMode === "write" ? "var(--primary)" : "var(--text-secondary)",
+                              cursor: "pointer"
+                            }}
+                          >
+                            Write (Markdown)
+                          </button>
+                          <button
+                            className={`editor-tab-btn ${editorMode === "preview" ? "active" : ""}`}
+                            onClick={() => setEditorMode("preview")}
+                            style={{
+                              padding: "0.3rem 0.6rem",
+                              fontSize: "0.8rem",
+                              fontWeight: 600,
+                              background: editorMode === "preview" ? "var(--primary-weak)" : "transparent",
+                              border: "none",
+                              borderRadius: "6px",
+                              color: editorMode === "preview" ? "var(--primary)" : "var(--text-secondary)",
+                              cursor: "pointer"
+                            }}
+                          >
+                            Preview Math &amp; Markdown
+                          </button>
+                        </div>
+                      )}
 
                       {/* Workspace fields */}
                       <div className="editor-body-workspace" style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-                        {editorMode === "write" ? (
+                        {activeNote.isDocument ? (
+                          <div className="document-detail-card" style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2.5rem", background: "rgba(255, 255, 255, 0.4)", borderRadius: "16px", border: "1px solid var(--divider)", margin: "1rem 0" }}>
+                            <div style={{ fontSize: "4.5rem", marginBottom: "1.25rem", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.06))" }}>
+                              {activeNote.format === "Image files" ? "🖼️" : activeNote.format === "Presentation" ? "📊" : "📄"}
+                            </div>
+                            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--text-primary)", textAlign: "center", marginBottom: "0.25rem" }}>
+                              {activeNote.title}
+                            </h3>
+                            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: "1.75rem", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.05em" }}>
+                              {activeNote.format || "Uploaded Document"}
+                            </p>
+                            
+                            <div style={{ background: "var(--bg-primary)", border: "1px solid var(--divider)", borderRadius: "10px", padding: "0.75rem 1rem", width: "100%", maxWidth: "480px", marginBottom: "2rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.8rem", color: "var(--text-secondary)", textAlign: "center" }}>
+                              <strong>Location:</strong> {activeNote.filePath?.startsWith("data:") ? "In-Memory Browser Cache" : activeNote.filePath}
+                            </div>
+                            
+                            <button
+                              onClick={async () => {
+                                const path = activeNote.filePath;
+                                if (!path) return;
+                                if (path.startsWith("data:")) {
+                                  // Browser download / open in new tab
+                                  const win = window.open();
+                                  if (win) {
+                                    win.document.write(`<iframe src="${path}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+                                  } else {
+                                    // Fallback download
+                                    const link = document.createElement("a");
+                                    link.href = path;
+                                    link.download = activeNote.title;
+                                    link.click();
+                                  }
+                                } else {
+                                  // Tauri native open
+                                  try {
+                                    const { invoke } = await import("@tauri-apps/api/core");
+                                    await invoke("open_document_file", { path });
+                                  } catch (err) {
+                                    console.error("Failed to open document:", err);
+                                    alert("Could not open file natively. Make sure the file exists at: " + path);
+                                  }
+                                }
+                              }}
+                              className="btn-primary"
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                                padding: "0.85rem 2rem",
+                                fontSize: "0.95rem",
+                                borderRadius: "12px",
+                                cursor: "pointer",
+                                border: "none",
+                                background: "var(--primary)",
+                                color: "white",
+                                fontWeight: 600,
+                                boxShadow: "var(--shadow-md)",
+                              }}
+                            >
+                              <span>Open Document in Dedicated App</span>
+                            </button>
+                          </div>
+                        ) : editorMode === "write" ? (
                           <textarea
                             value={activeNote.content}
                             onChange={(e) => handleUpdateNoteContent(e.target.value)}
@@ -2016,6 +2396,122 @@ export default function App() {
         settings={settings}
         onSave={handleSaveSettings}
       />
+
+      {/* Account Settings Modal popup */}
+      {isAccountOpen && currentUser && (
+        <div className="modal-overlay" style={{ display: "flex", zIndex: 2000, position: "fixed", top: 0, left: 0, width: "100%", height: "100%", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", alignItems: "center", justifyContent: "center" }}>
+          <div className="modal-content" style={{ maxWidth: "420px", width: "90%", padding: "1.75rem", borderRadius: "16px", background: "var(--bg-surface)", border: "1px solid var(--divider)", boxShadow: "var(--shadow-lg)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--text-primary)" }}>Account Settings</h3>
+              <button 
+                onClick={() => setIsAccountOpen(false)}
+                style={{ background: "transparent", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "1.2rem" }}
+              >
+                ×
+              </button>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+              <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", border: "2px solid var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)", fontSize: "1.75rem", fontWeight: 700 }}>
+                {(currentUser.displayName || currentUser.email || "S")[0].toUpperCase()}
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <h4 style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--text-primary)" }}>
+                  {currentUser.displayName || currentUser.email?.split("@")[0] || "Student"}
+                </h4>
+                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", opacity: 0.8 }}>
+                  {currentUser.email}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "1.75rem" }}>
+              {/* Username editing field */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                <label style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)" }}>Username / Display Name</label>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <input 
+                    type="text" 
+                    placeholder="Enter username"
+                    defaultValue={currentUser.displayName || currentUser.email?.split("@")[0] || ""}
+                    id="new-username-input"
+                    className="note-title-editor"
+                    style={{ flex: 1, padding: "0.45rem 0.75rem", background: "var(--bg-primary)", border: "1px solid var(--divider)", borderRadius: "8px", fontSize: "0.85rem", color: "var(--text-primary)" }}
+                  />
+                  <button
+                    onClick={async () => {
+                      const input = document.getElementById("new-username-input") as HTMLInputElement;
+                      if (input && input.value.trim()) {
+                        try {
+                          if (isFirebaseConfigured) {
+                            const { getAuth, updateProfile } = await import("firebase/auth");
+                            const auth = getAuth();
+                            if (auth.currentUser) {
+                              await updateProfile(auth.currentUser, { displayName: input.value.trim() });
+                            }
+                          } else {
+                            // Update local mock user
+                            const savedMock = localStorage.getItem("gemma_mock_user");
+                            if (savedMock) {
+                              const parsed = JSON.parse(savedMock);
+                              parsed.displayName = input.value.trim();
+                              localStorage.setItem("gemma_mock_user", JSON.stringify(parsed));
+                            }
+                          }
+                          // Trigger a re-render by force-updating the user object
+                          setCurrentUser({ ...currentUser, displayName: input.value.trim() });
+                          alert("Username updated successfully!");
+                        } catch (e: any) {
+                          alert("Failed to update username: " + e.message);
+                        }
+                      }
+                    }}
+                    className="action-btn-primary"
+                    style={{ fontSize: "0.75rem", padding: "0.45rem 1rem", borderRadius: "8px", background: "var(--primary)", color: "white", border: "none", cursor: "pointer", fontWeight: 600 }}
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              {/* Auth Method */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.6rem 0.75rem", background: "rgba(0,0,0,0.02)", border: "1px solid var(--divider)", borderRadius: "8px" }}>
+                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Login Method:</span>
+                <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--primary)" }}>
+                  {currentUser.email?.includes("google-desktop") ? "Google Account (Desktop)" :
+                   currentUser.email?.includes("apple-desktop") ? "Apple ID (Desktop)" :
+                   currentUser.email?.includes("google") ? "Google OAuth" :
+                   currentUser.email?.includes("apple") ? "Apple OAuth" :
+                   "Email & Password"}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button
+                onClick={async () => {
+                  if (confirm("Are you sure you want to log out?")) {
+                    try {
+                      await signOutUser();
+                    } catch (err) {
+                      console.error("SignOut error:", err);
+                    }
+                    localStorage.removeItem("gemma_mock_user");
+                    setCurrentUser(null);
+                    setIsAccountOpen(false);
+                    setView("splash");
+                  }
+                }}
+                className="action-btn-danger"
+                style={{ flex: 1, padding: "0.65rem", background: "rgba(239, 68, 68, 0.1)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.2)", borderRadius: "8px", fontSize: "0.85rem", cursor: "pointer", fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}
+              >
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -35,13 +35,17 @@ if (isConfigured) {
     auth = getAuth(app);
     
     // Safely check if analytics is supported in the current environment
-    isSupported().then((supported) => {
-      if (supported && firebaseConfig.measurementId) {
-        analytics = getAnalytics(app);
-      }
-    }).catch((err) => {
-      console.warn("Firebase Analytics skipped:", err);
-    });
+    try {
+      isSupported().then((supported) => {
+        if (supported && firebaseConfig.measurementId) {
+          analytics = getAnalytics(app);
+        }
+      }).catch((err) => {
+        console.warn("Firebase Analytics skipped:", err);
+      });
+    } catch (analyticsError) {
+      console.warn("Firebase Analytics synchronous initialization failed:", analyticsError);
+    }
   } catch (error) {
     console.error("Failed to initialize Firebase Auth, falling back to mock mode:", error);
   }

@@ -8,6 +8,8 @@ export interface Note {
   subjectCode?: string;
   subjectName?: string;
   format?: string; // e.g. "Presentation", "Teacher note", "Own notes", "Image files", "Other"
+  filePath?: string;
+  isDocument?: boolean;
 }
 
 export interface SavedChat {
