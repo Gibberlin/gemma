@@ -265,7 +265,7 @@ body {
   max-width: 1400px;
   width: 95%;
   margin: 0 auto;
-  padding: 2.5rem 1.75rem;
+  padding: 2.5rem 1.75rem 120px 1.75rem; /* Increased padding-bottom for sticky AdBanner */
   box-sizing: border-box;
 }
 
@@ -1111,3 +1111,714 @@ body {
   font-style: italic;
   border-radius: 4px;
 }
+
+/* ==========================================================================
+   firebase Authentication & Login Screen
+   ========================================================================== */
+
+.login-screen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  background: linear-gradient(rgba(248, 250, 252, 0.9), rgba(241, 245, 249, 0.9)), url('/background.jpg');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.login-glow-bg {
+  position: absolute;
+  width: 40rem;
+  height: 40rem;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, rgba(5, 150, 105, 0.04) 50%, transparent 70%);
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-logo-circle {
+  width: 3.5rem;
+  height: 3.5rem;
+  margin: 0 auto 1rem auto;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+}
+
+.login-logo-icon {
+  color: white;
+}
+
+.login-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.login-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.login-warning-box {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+  color: #b45309;
+}
+
+.warning-icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.warning-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.warning-desc {
+  font-size: 0.75rem;
+  margin-top: 0.15rem;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.login-error-box {
+  background: var(--danger-weak);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: var(--danger);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.login-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.login-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--divider);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.login-input-wrapper:focus-within {
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 0.85rem;
+  color: var(--text-muted);
+}
+
+.login-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.25rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  border: none;
+  background: transparent;
+  outline: none;
+  border-radius: 12px;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.15);
+}
+
+.login-submit-btn:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.25);
+  transform: translateY(-1px);
+}
+
+.login-demo-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  color: var(--accent-teal);
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+  box-sizing: border-box;
+}
+
+.login-demo-btn:hover {
+  background: rgba(5, 150, 105, 0.06);
+  border-color: var(--accent-teal);
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.login-toggle-link {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.login-toggle-link:hover {
+  text-decoration: underline;
+}
+
+.sidebar-divider {
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+   Slash Commands floating menu & autocomplete
+   ========================================================================== */
+
+.slash-commands-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 1.25rem;
+  right: 1.25rem;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--divider);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 0, 0, 0.05);
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-sizing: border-box;
+  animation: slideUp 0.15s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.slash-commands-header {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--divider);
+  margin-bottom: 0.25rem;
+}
+
+.slash-command-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.slash-command-item:hover {
+  background: var(--primary-weak);
+}
+
+.command-trigger {
+  font-family: 'Consolas', monospace;
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.9rem;
+  background: var(--primary-glow);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.command-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.chat-command-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  margin-bottom: 0.25rem;
+}
+
+/* ==========================================================================
+   Notes Attach dropdown in Chat view
+   ========================================================================== */
+
+.notes-attach-dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 3.5rem;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--divider);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  z-index: 99;
+  max-height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-attach-dropdown-header {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--divider);
+}
+
+.notes-attach-dropdown-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.notes-attach-dropdown-item {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+
+.notes-attach-dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.notes-attach-dropdown-item .note-item-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notes-attach-dropdown-item .note-item-meta {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+.notes-attach-dropdown-empty {
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   My Note workspace styles
+   ========================================================================== */
+
+.notes-workspace-layout {
+  border: 1px solid var(--divider);
+}
+
+.note-list-item {
+  padding: 0.85rem;
+  background: transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.note-list-item:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.note-list-item.active {
+  background: var(--bg-surface);
+  border-color: var(--divider);
+  box-shadow: var(--shadow-sm);
+}
+
+.note-list-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 4px;
+  background: var(--primary);
+  border-radius: 0 4px 4px 0;
+}
+
+.note-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.note-format-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: var(--primary-glow);
+  color: var(--primary);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+}
+
+.note-format-badge.chat-badge {
+  background: rgba(147, 51, 234, 0.08);
+  color: #9333ea;
+  border-color: rgba(147, 51, 234, 0.15);
+}
+
+.note-date {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.note-item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item-snippet {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.15rem;
+}
+
+.note-item-meta-row {
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.note-subject-tag {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.03);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.note-delete-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 0.25rem;
+  border-radius: 6px;
+}
+
+.note-list-item:hover .note-delete-btn,
+.note-list-item.active .note-delete-btn {
+  opacity: 0.6;
+}
+
+.note-delete-btn:hover {
+  opacity: 1 !important;
+  color: var(--danger);
+  background: var(--danger-weak);
+}
+
+.note-editor-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-status-bar {
+  border-bottom: 1px solid var(--divider);
+}
+
+.note-title-editor {
+  width: 100%;
+}
+
+.editor-tabs-row {
+  border-bottom: 1px solid var(--divider);
+}
+
+.editor-body-workspace {
+  flex: 1;
+}
+
+.note-body-textarea {
+  font-family: inherit;
+}
+
+.note-body-preview {
+  color: var(--text-primary);
+  padding: 0.25rem;
+  box-sizing: border-box;
+}
+
+/* Custom styles for markdown preview inside notes */
+.note-body-preview h1, .note-body-preview h2, .note-body-preview h3 {
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-primary);
+  margin: 1rem 0 0.5rem 0;
+}
+.note-body-preview h1 { font-size: 1.5rem; border-bottom: 1px solid var(--divider); padding-bottom: 0.3rem; }
+.note-body-preview h2 { font-size: 1.25rem; }
+.note-body-preview h3 { font-size: 1.1rem; }
+.note-body-preview p { margin-bottom: 0.75rem; }
+.note-body-preview ul, .note-body-preview ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+.note-body-preview li { margin-bottom: 0.25rem; }
+.note-body-preview pre {
+  background: #f1f5f9;
+  border: 1px solid var(--divider);
+  padding: 0.75rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+.note-body-preview code {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.85rem;
+  background: rgba(15, 23, 42, 0.05);
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  color: #c2410c;
+}
+.note-body-preview pre code {
+  background: transparent;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+.notes-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-icon-wrap {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: var(--primary-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.empty-icon {
+  color: var(--primary);
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+.notes-empty-state h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.notes-empty-state p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   Google AdSense Banner Integration
+   ========================================================================== */
+
+.adsense-banner-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--divider);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  box-sizing: border-box;
+  padding: 0.5rem;
+}
+
+.adsense-banner-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 728px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.adsense-label {
+  position: absolute;
+  top: -16px;
+  right: 8px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  pointer-events: none;
+}
+
+.adsense-placeholder-card {
+  width: 100%;
+  height: 100%;
+  border: 1px dashed var(--divider);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.adsense-placeholder-card:hover {
+  background: rgba(37, 99, 235, 0.02);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.placeholder-brand {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.placeholder-info {
+  font-size: 0.65rem;
+  margin-top: 0.15rem;
+}
+
+

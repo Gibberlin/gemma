@@ -9,6 +9,16 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  Notebook,
+  LogOut,
+  Plus,
+  Trash2,
+  Search,
+  Save,
+  Cloud,
+  Database,
+  UploadCloud,
+  Sparkles
 } from "lucide-react";
 import {
   Message,
@@ -17,6 +27,27 @@ import {
 } from "./api";
 import SettingsModal from "./components/SettingsModal";
 import ConfigurationPanel from "./components/ConfigurationPanel";
+import LoginScreen from "./components/LoginScreen";
+import NoteFormModal from "./components/NoteFormModal";
+import AdBanner from "./components/AdBanner";
+import { onAuthChanged, signOutUser } from "./firebase";
+import {
+  Note,
+  SavedChat,
+  getNotes,
+  saveNote,
+  deleteNote,
+  createNote,
+  getSavedChats,
+  saveChat,
+  deleteSavedChat,
+  createSavedChat
+} from "./utils/notesStorage";
+import {
+  CHAT_COMMANDS,
+  parseMessageCommand,
+  getModifiedSystemInstruction
+} from "./utils/chatCommands";
 import { marked } from "marked";
 import katex from "katex";
 import "katex/dist/katex.min.css";
@@ -131,7 +162,7 @@ function SplashScreen({ onFinish }: { onFinish: () => void }) {
 
 // Main App Component
 export default function App() {
-  const [view, setView] = useState<"splash" | "introduction" | "home" | "semester" | "subject_landing" | "materials" | "qa">("splash");
+  const [view, setView] = useState<"splash" | "introduction" | "home" | "semester" | "subject_landing" | "materials" | "qa" | "my_notes">("splash");
   const [introStep, setIntroStep] = useState(1);
   
   // Courses and Materials data loaded from public/*.json
@@ -162,7 +193,35 @@ export default function App() {
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Load static files and configurations on mount
+  // --- Authentication State ---
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // --- My Note Workspace States ---
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
+  const [activeNotesSection, setActiveNotesSection] = useState<"notes" | "chats">("notes");
+  const [notesSearchQuery, setNotesSearchQuery] = useState("");
+  const [chatsSearchQuery, setChatsSearchQuery] = useState("");
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [editorMode, setEditorMode] = useState<"write" | "preview">("write");
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [notesSubjectFilter, setNotesSubjectFilter] = useState("");
+  const saveTimeoutRef = useRef<any>(null);
+
+  // --- Notes Form Modal States ---
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isFormModalUpload, setIsFormModalUpload] = useState(false);
+  const [formModalPrefill, setFormModalPrefill] = useState<any>({});
+  const uploadFileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- Chat dropdown / Autocomplete & commands States ---
+  const [isNoteDropdownOpen, setIsNoteDropdownOpen] = useState(false);
+  const [chatInputText, setChatInputText] = useState("");
+  const [isSlashMenuOpen, setIsSlashMenuOpen] = useState(false);
+  const [activeSavedChatId, setActiveSavedChatId] = useState<string | null>(null);
+
+  // Load static files, notes and configurations on mount
   useEffect(() => {
     // Define global copy helper on window for markdown code blocks
     (window as any).copyGemmaCode = (btn: HTMLButtonElement, containerId: string) => {
@@ -223,7 +282,27 @@ export default function App() {
     }
 
     loadStaticData();
+
+    // Hook up Firebase Auth Listener
+    const unsubscribeAuth = onAuthChanged((user) => {
+      setCurrentUser(user);
+      setAuthLoading(false);
+    });
+
+    // Populate notes and saved chats
+    setNotes(getNotes());
+    setSavedChats(getSavedChats());
+
+    return () => {
+      unsubscribeAuth();
+    };
   }, []);
+
+  // Update lists when selectedNoteId or view transitions happen
+  useEffect(() => {
+    setNotes(getNotes());
+    setSavedChats(getSavedChats());
+  }, [view, selectedNoteId]);
 
   // Auto-scroll chat
   useEffect(() => {
@@ -340,7 +419,7 @@ export default function App() {
           throwOnError: false,
           trust: true,
         });
-        const id = `__MATH_PLACEHOLDER_${mathCounter++}__`;
+        const id = `MATHPLACEHOLDERXYZ${mathCounter++}`;
         placeholders.push(html);
         return id;
       } catch (e) {
@@ -382,16 +461,199 @@ export default function App() {
 
     // 4. Restore math placeholders
     for (let i = 0; i < placeholders.length; i++) {
-      const id = `__MATH_PLACEHOLDER_${i}__`;
+      const id = `MATHPLACEHOLDERXYZ${i}`;
       html = html.split(id).join(placeholders[i]);
     }
 
     return html;
   };
 
-  // Send Chat message handling
+  // --- Slash Command & Autocomplete handlers ---
+  const handleTextChange = (text: string) => {
+    setChatInputText(text);
+    if (text.startsWith("/")) {
+      const spaceIndex = text.indexOf(" ");
+      // Open slash menu if they typed / and haven't typed a space yet
+      if (spaceIndex === -1) {
+        setIsSlashMenuOpen(true);
+        return;
+      }
+    }
+    setIsSlashMenuOpen(false);
+  };
+
+  const handleSelectSlashCommand = (cmd: string) => {
+    setChatInputText(cmd + " ");
+    setIsSlashMenuOpen(false);
+    chatInputRef.current?.focus();
+  };
+
+  // --- Attach Note Handler ---
+  const handleAttachNote = (note: Note) => {
+    if (attachments.some((att) => att.name === `Note: ${note.title}`)) {
+      alert("Note is already attached!");
+      return;
+    }
+    setAttachments((prev) => [
+      ...prev,
+      {
+        name: `Note: ${note.title}`,
+        content: note.content,
+        size: new Blob([note.content]).size,
+      },
+    ]);
+  };
+
+  // --- Note File Upload parser ---
+  const handleNoteFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      if (content !== undefined) {
+        setFormModalPrefill({
+          title: file.name.substring(0, file.name.lastIndexOf('.')) || file.name,
+          content: content,
+        });
+        setIsFormModalUpload(true);
+        setIsFormModalOpen(true);
+      }
+    };
+    reader.readAsText(file);
+    if (uploadFileInputRef.current) uploadFileInputRef.current.value = "";
+  };
+
+  // --- Note and Chat State Management wrappers ---
+  const handleCreateOrUploadNoteConfirm = (data: {
+    title: string;
+    semester: string;
+    subjectCode: string;
+    subjectName: string;
+    format: string;
+    content?: string;
+  }) => {
+    const newNote = createNote({
+      title: data.title,
+      content: data.content || "",
+      semester: data.semester,
+      subjectCode: data.subjectCode,
+      subjectName: data.subjectName,
+      format: data.format,
+    });
+    setNotes(getNotes());
+    setSelectedNoteId(newNote.id);
+    setIsFormModalOpen(false);
+    setView("my_notes");
+  };
+
+  const handleDeleteNoteState = (id: string) => {
+    deleteNote(id);
+    setNotes(getNotes());
+    if (selectedNoteId === id) setSelectedNoteId(null);
+  };
+
+  const handleDeleteSavedChatState = (id: string) => {
+    deleteSavedChat(id);
+    setSavedChats(getSavedChats());
+    if (activeSavedChatId === id) setActiveSavedChatId(null);
+  };
+
+  const handleUpdateNoteTitle = (newTitle: string) => {
+    if (!selectedNoteId) return;
+    setNotes((prev) =>
+      prev.map((n) => (n.id === selectedNoteId ? { ...n, title: newTitle } : n))
+    );
+    const notesList = getNotes();
+    const current = notesList.find((n) => n.id === selectedNoteId);
+    if (current) {
+      current.title = newTitle;
+      saveNote(current);
+    }
+  };
+
+  const handleUpdateNoteContent = (newContent: string) => {
+    if (!selectedNoteId) return;
+    setNotes((prev) =>
+      prev.map((n) => (n.id === selectedNoteId ? { ...n, content: newContent } : n))
+    );
+    setSaveStatus("Saving...");
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => {
+      const notesList = getNotes();
+      const current = notesList.find((n) => n.id === selectedNoteId);
+      if (current) {
+        current.content = newContent;
+        saveNote(current);
+        setSaveStatus("Saved");
+        setTimeout(() => setSaveStatus(null), 2000);
+      }
+    }, 500);
+  };
+
+  // --- Saved Chat Actions ---
+  const handleSaveCurrentChat = () => {
+    if (chatMessages.length === 0 || !currentSubject) return;
+
+    if (activeSavedChatId) {
+      const savedList = getSavedChats();
+      const current = savedList.find(c => c.id === activeSavedChatId);
+      if (current) {
+        current.messages = chatMessages;
+        saveChat(current);
+        setSavedChats(getSavedChats());
+        alert("Chat progress updated successfully!");
+        return;
+      }
+    }
+
+    const titlePrompt = prompt(
+      "Enter a title for this saved chat:",
+      `${currentSubject.name} Chat - ${new Date().toLocaleDateString()}`
+    );
+    if (titlePrompt === null) return;
+    const title = titlePrompt.trim() || `${currentSubject.name} Chat`;
+
+    const newSavedChat = createSavedChat(
+      title,
+      chatMessages,
+      currentSemester || undefined,
+      currentSubject.course_code || undefined,
+      currentSubject.name
+    );
+    setActiveSavedChatId(newSavedChat.id);
+    setSavedChats(getSavedChats());
+    alert("Chat saved successfully! You can access it in the 'My Note' section.");
+  };
+
+  const handleOpenSavedChat = (savedChat: SavedChat) => {
+    setCurrentSemester(savedChat.semester || null);
+    if (syllabus && savedChat.semester && savedChat.subjectName) {
+      const semData = syllabus.CSE_Syllabus_ASTU[savedChat.semester];
+      if (semData) {
+        const foundSub = semData.subjects.find((s) => s.name === savedChat.subjectName);
+        if (foundSub) {
+          setCurrentSubject(foundSub);
+        }
+      }
+    } else {
+      setCurrentSubject({
+        name: savedChat.subjectName || "Saved Chat Subject",
+        course_code: savedChat.subjectCode,
+      });
+    }
+    setChatMessages(savedChat.messages);
+    setActiveSavedChatId(savedChat.id);
+    setView("qa");
+  };
+
+  // Send Chat message handling with Slash commands
   const handleSendChatMessage = async (inputText: string) => {
     if (!inputText.trim() && attachments.length === 0) return;
+
+    // 1. Parse Slash Command
+    const { command, cleanText } = parseMessageCommand(inputText);
 
     let compiledContent = "";
     
@@ -404,12 +666,14 @@ export default function App() {
       compiledContent += "User's request:\n";
     }
 
-    compiledContent += inputText;
+    compiledContent += cleanText;
 
-    // Reset inputs
+    // Reset inputs & attachments
     setAttachments([]);
+    setChatInputText("");
 
-    const userMsg: Message = { role: "user", content: compiledContent };
+    // Build the user message to display. Show the full command prompt so user knows what command they ran.
+    const userMsg: Message = { role: "user", content: inputText };
     const updatedMessages = [...chatMessages, userMsg];
     setChatMessages(updatedMessages);
     setIsGenerating(true);
@@ -427,17 +691,47 @@ export default function App() {
     // Build runtime settings directly from user configurations
     const runtimeSettings = { ...settings };
 
-    // Build subject specific system prompt: prepends ASTU syllabus details
+    // Build base system prompt prepending ASTU syllabus details
     let finalSystemPrompt = settings.systemInstruction || "";
     if (syllabus && currentSemester && currentSubject) {
       const semData = syllabus.CSE_Syllabus_ASTU[currentSemester];
       finalSystemPrompt = `System instructions:\nSyllabus Info - Semester: ${currentSemester.replace(/_/g, " ")}. focus: ${semData.focus}. Subject Name: ${currentSubject.name}. Subject Context: ${currentSubject.context || ""}.\n\nInstructions: ${finalSystemPrompt}`;
     }
-    runtimeSettings.systemInstruction = finalSystemPrompt;
+
+    // Compile attached notes text if required by /note or /noteonly, or auto-detect notes for this subject
+    let attachedNotesContent = "";
+    const noteAttachments = attachments.filter((a) => a.name.startsWith("Note:"));
+    if (noteAttachments.length > 0) {
+      attachedNotesContent = noteAttachments
+        .map((a) => `[Note: ${a.name.substring(6)}]\n${a.content}`)
+        .join("\n\n");
+    } else if (currentSubject) {
+      // Auto-extract notes matching this subject in localStorage
+      const subjectNotes = getNotes().filter((n) => n.subjectName === currentSubject.name);
+      if (subjectNotes.length > 0) {
+        attachedNotesContent = subjectNotes
+          .map((n) => `[Note: ${n.title}]\n${n.content}`)
+          .join("\n\n");
+      }
+    }
+
+    // Apply modified system prompt based on slash command
+    runtimeSettings.systemInstruction = getModifiedSystemInstruction(
+      command,
+      finalSystemPrompt,
+      attachedNotesContent
+    );
 
     await generateContentStream(
       runtimeSettings,
-      updatedMessages,
+      updatedMessages.map((m) => {
+        // Strip the command trigger from the history sent to the model to avoid syntax confusion, if matched
+        if (m.role === "user" && m.content.startsWith("/")) {
+          const { cleanText: ct } = parseMessageCommand(m.content);
+          return { ...m, content: ct };
+        }
+        return m;
+      }),
       (chunk) => {
         setChatMessages((prev) => {
           const next = [...prev];
@@ -483,6 +777,7 @@ export default function App() {
       setView("subject_landing");
       setChatMessages([]);
       setAttachments([]);
+      setActiveSavedChatId(null);
     } else if (view === "subject_landing") {
       setView("semester");
       setCurrentSubject(null);
@@ -499,6 +794,33 @@ export default function App() {
   // Render Splash Screen
   if (view === "splash") {
     return <SplashScreen onFinish={() => setView(hasConfig ? "home" : "introduction")} />;
+  }
+
+  // Auth Guard: Render Login Screen if not authenticated
+  if (!currentUser && !authLoading) {
+    return (
+      <LoginScreen
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setView(hasConfig ? "home" : "introduction");
+        }}
+      />
+    );
+  }
+
+  // If firebase is in loading phase, show a minimal loading layout
+  if (authLoading) {
+    return (
+      <div className="splash-container">
+        <div className="splash-glow opacity-100" />
+        <div className="splash-content">
+          <div className="splash-title-wrap">
+            <h1 className="splash-title">Gemma</h1>
+            <p className="splash-subtitle">Checking Authentication...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Render Introduction Screen (Welcome Configuration Setup)
@@ -624,6 +946,27 @@ export default function App() {
             </div>
           )}
         </div>
+        
+        <div className="sidebar-divider" style={{ margin: "0.5rem 1.25rem", height: "1px", background: "var(--divider)" }} />
+
+        <div
+          className={`sidebar-link ${view === "my_notes" ? "active" : ""}`}
+          onClick={() => {
+            setNotesSubjectFilter(""); // Clear filter
+            setView("my_notes");
+          }}
+          style={{
+            justifyContent: isSidebarCollapsed ? "center" : "flex-start",
+            padding: isSidebarCollapsed ? "0.75rem 0" : "0.75rem 1rem",
+            margin: "0 0.5rem 0.5rem 0.5rem",
+          }}
+          title={isSidebarCollapsed ? "My Note" : undefined}
+        >
+          <Notebook size={16} style={{ marginRight: isSidebarCollapsed ? 0 : "0.5rem" }} />
+          {!isSidebarCollapsed && <span>My Note</span>}
+        </div>
+
+        <div className="sidebar-divider" style={{ margin: "0.5rem 1.25rem", height: "1px", background: "var(--divider)" }} />
 
         <nav className="sidebar-nav" aria-label="Semester list selection">
           {semestersList.map((sem) => (
@@ -649,6 +992,14 @@ export default function App() {
         </nav>
 
         <div className="sidebar-footer" style={{ padding: isSidebarCollapsed ? "0.75rem 0.5rem" : "1.25rem" }}>
+          {!isSidebarCollapsed && currentUser && (
+            <div className="user-profile-info" style={{ display: "flex", flexDirection: "column", gap: "0.25rem", marginBottom: "0.5rem", padding: "0 0.5rem" }}>
+              <span className="user-email" style={{ fontSize: "0.75rem", color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", opacity: 0.8 }} title={currentUser.email}>
+                {currentUser.email}
+              </span>
+            </div>
+          )}
+          
           <button
             className="sidebar-link"
             onClick={() => setIsSettingsOpen(true)}
@@ -662,6 +1013,27 @@ export default function App() {
           >
             <Settings size={16} />
             {!isSidebarCollapsed && <span>Settings</span>}
+          </button>
+
+          <button
+            className="sidebar-link"
+            onClick={async () => {
+              if (confirm("Are you sure you want to log out?")) {
+                await signOutUser();
+                setView("splash");
+              }
+            }}
+            style={{
+              width: "100%",
+              justifyContent: isSidebarCollapsed ? "center" : "flex-start",
+              gap: "0.5rem",
+              padding: isSidebarCollapsed ? "0.75rem 0" : "0.75rem 1rem",
+              color: "var(--danger)",
+            }}
+            title={isSidebarCollapsed ? "Log Out" : undefined}
+          >
+            <LogOut size={16} />
+            {!isSidebarCollapsed && <span>Log Out</span>}
           </button>
         </div>
       </aside>
@@ -776,13 +1148,20 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="card card-hover" onClick={() => setView("qa")}>
+              <div className="card card-hover" onClick={() => { setChatMessages([]); setActiveSavedChatId(null); setView("qa"); }}>
                 <div className="card-title">Subject Q&amp;A</div>
                 <div className="card-desc">
                   Ask questions related to this subject and get immediate answers from an LLM based on Gemma.
                   <span style={{ display: "block", color: "var(--primary)", marginTop: "0.5rem", fontSize: "0.8rem" }}>
                     Uses your configured API connection settings.
                   </span>
+                </div>
+              </div>
+
+              <div className="card card-hover" onClick={() => { setNotesSubjectFilter(currentSubject.name); setView("my_notes"); }}>
+                <div className="card-title">Subject Notes</div>
+                <div className="card-desc">
+                  Read, edit and organize your personal notes and summaries for this subject.
                 </div>
               </div>
             </div>
@@ -906,22 +1285,122 @@ export default function App() {
                   </div>
                 </div>
               )}
+              {/* Subject Notes Integration */}
+              <div style={{ marginTop: "2rem", borderTop: "1px solid var(--divider)", paddingTop: "1.5rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <Notebook size={18} className="text-primary" />
+                    <span>My Notes for this Subject</span>
+                  </h3>
+                  <button
+                    className="action-btn-primary"
+                    onClick={() => {
+                      setFormModalPrefill({
+                        semester: currentSemester || "",
+                        subjectName: currentSubject.name,
+                        subjectCode: currentSubject.course_code || "",
+                      });
+                      setIsFormModalUpload(false);
+                      setIsFormModalOpen(true);
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.35rem",
+                      padding: "0.4rem 0.8rem",
+                      fontSize: "0.8rem",
+                      background: "var(--primary)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontWeight: 500,
+                      boxShadow: "var(--shadow-sm)",
+                    }}
+                  >
+                    <Plus size={14} />
+                    <span>Add Note</span>
+                  </button>
+                </div>
+
+                {notes.filter(n => n.subjectName === currentSubject.name).length === 0 ? (
+                  <div className="ref-box" style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.85rem", padding: "1.5rem" }}>
+                    No notes found for this subject. Click "Add Note" to create one.
+                  </div>
+                ) : (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "0.75rem" }}>
+                    {notes
+                      .filter(n => n.subjectName === currentSubject.name)
+                      .map((note) => (
+                        <div
+                          key={note.id}
+                          className="card card-hover"
+                          onClick={() => {
+                            // Open note in the Notes workspace
+                            setSelectedNoteId(note.id);
+                            setNotesSubjectFilter(currentSubject.name);
+                            setView("my_notes");
+                          }}
+                          style={{ padding: "1rem", position: "relative", cursor: "pointer" }}
+                        >
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.25rem" }}>
+                            <span className="badge" style={{ fontSize: "0.7rem", padding: "0.1rem 0.4rem" }}>{note.format || "Other"}</span>
+                            <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                              {new Date(note.updatedAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <h4 style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {note.title}
+                          </h4>
+                          <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginTop: "0.25rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {note.content || "Empty note."}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Q&A CHAT VIEW */}
-        {view === "qa" && currentSubject && (
+               {view === "qa" && currentSubject && (
           <div className="page-wrapper" style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-            <header className="page-header" style={{ marginBottom: "1rem", flexShrink: 0 }}>
-              <div className="back-link" onClick={handleBack}>
-                <ArrowLeft size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
-                {currentSubject.name}
+            <header className="page-header" style={{ marginBottom: "1rem", flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+              <div>
+                <div className="back-link" onClick={handleBack}>
+                  <ArrowLeft size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                  {currentSubject.name}
+                </div>
+                <h1 className="page-title">Subject Q&amp;A</h1>
+                <p className="page-subtitle">
+                  {formatTitle(currentSemester)} • {currentSubject.name}
+                </p>
               </div>
-              <h1 className="page-title">Subject Q&amp;A</h1>
-              <p className="page-subtitle">
-                {formatTitle(currentSemester)} • {currentSubject.name}
-              </p>
+
+              {chatMessages.length > 0 && (
+                <button
+                  onClick={handleSaveCurrentChat}
+                  className="action-btn-primary"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    padding: "0.5rem 1rem",
+                    background: "var(--primary)",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: 500,
+                    boxShadow: "var(--shadow-sm)",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <Save size={14} />
+                  <span>Save Chat</span>
+                </button>
+              )}
             </header>
 
             {/* Subject Context Header Card */}
@@ -940,18 +1419,41 @@ export default function App() {
               <div className="qa-messages-box">
                 {chatMessages.length === 0 ? (
                   <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.9rem", marginTop: "4rem" }}>
-                    Ask any question related to the syllabus of this subject.
+                    Ask any question related to the syllabus of this subject. Try typing <strong style={{ color: "var(--primary)" }}>/</strong> for special commands.
                   </div>
                 ) : (
-                  chatMessages.map((msg, idx) => (
-                    <div key={idx} className={`chat-bubble ${msg.role === "model" ? "assistant" : msg.role}`}>
-                      {msg.role === "user" ? (
-                        msg.content
-                      ) : (
-                        <div dangerouslySetInnerHTML={{ __html: renderMarkdownAndMath(msg.content) }} style={{ width: "100%" }} />
-                      )}
-                    </div>
-                  ))
+                  chatMessages.map((msg, idx) => {
+                    const isCommandMsg = msg.role === "user" && msg.content.startsWith("/");
+                    let displayContent = msg.content;
+                    let activeCmdName = "";
+
+                    if (isCommandMsg) {
+                      const spaceIdx = msg.content.indexOf(" ");
+                      const trigger = spaceIdx === -1 ? msg.content : msg.content.substring(0, spaceIdx);
+                      const matchedCmd = CHAT_COMMANDS.find(c => c.trigger === trigger);
+                      if (matchedCmd) {
+                        activeCmdName = matchedCmd.name;
+                        displayContent = spaceIdx === -1 ? "" : msg.content.substring(spaceIdx + 1);
+                      }
+                    }
+
+                    return (
+                      <div key={idx} className={`chat-bubble ${msg.role === "model" ? "assistant" : msg.role}`}>
+                        {msg.role === "user" ? (
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                            {activeCmdName && (
+                              <span className="chat-command-badge">
+                                {activeCmdName}
+                              </span>
+                            )}
+                            <span>{displayContent}</span>
+                          </div>
+                        ) : (
+                          <div dangerouslySetInnerHTML={{ __html: renderMarkdownAndMath(msg.content) }} style={{ width: "100%" }} />
+                        )}
+                      </div>
+                    );
+                  })
                 )}
                 {isGenerating && chatMessages.length > 0 && chatMessages[chatMessages.length - 1].content === "" && (
                   <div className="chat-bubble assistant">
@@ -970,6 +1472,23 @@ export default function App() {
                 {chatError && (
                   <div style={{ fontSize: "0.8rem", color: "var(--danger)", padding: "0 0.5rem" }}>
                     {chatError}
+                  </div>
+                )}
+
+                {/* Floating Autocomplete Slash Commands Menu */}
+                {isSlashMenuOpen && (
+                  <div className="slash-commands-menu">
+                    <div className="slash-commands-header">Chat Skills &amp; Commands</div>
+                    {CHAT_COMMANDS.map((cmd) => (
+                      <div
+                        key={cmd.trigger}
+                        className="slash-command-item"
+                        onClick={() => handleSelectSlashCommand(cmd.trigger)}
+                      >
+                        <span className="command-trigger">{cmd.trigger}</span>
+                        <span className="command-desc">{cmd.description}</span>
+                      </div>
+                    ))}
                   </div>
                 )}
 
@@ -992,7 +1511,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Active API Mode description line (replaces toggles & selects) */}
+                {/* Active API Mode description line */}
                 <div className="qa-toggle-row">
                   <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
                     <span
@@ -1000,7 +1519,7 @@ export default function App() {
                         width: "8px",
                         height: "8px",
                         borderRadius: "50%",
-                        backgroundColor: isLocal ? "#10b981" : "#3b82f6", // Green for local, Blue for cloud
+                        backgroundColor: isLocal ? "#10b981" : "#3b82f6",
                         display: "inline-block",
                       }}
                     />
@@ -1017,7 +1536,7 @@ export default function App() {
                 </div>
 
                 {/* Text input row */}
-                <div className="qa-input-row">
+                <div className="qa-input-row" style={{ position: "relative" }}>
                   {/* File attach button */}
                   <button
                     type="button"
@@ -1036,19 +1555,56 @@ export default function App() {
                     accept=".txt,.md,.js,.jsx,.ts,.tsx,.json,.py,.rs,.c,.cpp,.h,.java,.html,.css,.csv"
                   />
 
+                  {/* Note attach button */}
+                  <button
+                    type="button"
+                    className="qa-attach-btn"
+                    onClick={() => setIsNoteDropdownOpen(!isNoteDropdownOpen)}
+                    title="Attach a saved note"
+                    style={{ color: isNoteDropdownOpen ? "var(--primary)" : "inherit" }}
+                  >
+                    <Notebook size={18} />
+                  </button>
+
+                  {/* Notes attach dropdown */}
+                  {isNoteDropdownOpen && (
+                    <div className="notes-attach-dropdown">
+                      <div className="notes-attach-dropdown-header">Select a note to attach:</div>
+                      <div className="notes-attach-dropdown-list">
+                        {notes.length === 0 ? (
+                          <div className="notes-attach-dropdown-empty">No notes found. Create notes in the **My Note** section.</div>
+                        ) : (
+                          notes.map((note) => (
+                            <div
+                              key={note.id}
+                              className="notes-attach-dropdown-item"
+                              onClick={() => {
+                                handleAttachNote(note);
+                                setIsNoteDropdownOpen(false);
+                              }}
+                            >
+                              <div className="note-item-title">{note.title}</div>
+                              <div className="note-item-meta">{note.subjectName || "General"} • {note.format || "Note"}</div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Input textarea */}
                   <textarea
                     ref={chatInputRef}
                     className="qa-textarea"
                     rows={1}
-                    placeholder="Ask a syllabus or subject question..."
+                    placeholder="Ask a syllabus question... (use / for skills)"
+                    value={chatInputText}
+                    onChange={(e) => handleTextChange(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        const val = e.currentTarget.value;
-                        if (val.trim() || attachments.length > 0) {
-                          handleSendChatMessage(val);
-                          e.currentTarget.value = "";
+                        if (chatInputText.trim() || attachments.length > 0) {
+                          handleSendChatMessage(chatInputText);
                         }
                       }
                     }}
@@ -1070,12 +1626,8 @@ export default function App() {
                       type="button"
                       className="qa-send-btn"
                       onClick={() => {
-                        if (chatInputRef.current) {
-                          const val = chatInputRef.current.value;
-                          if (val.trim() || attachments.length > 0) {
-                            handleSendChatMessage(val);
-                            chatInputRef.current.value = "";
-                          }
+                        if (chatInputText.trim() || attachments.length > 0) {
+                          handleSendChatMessage(chatInputText);
                         }
                       }}
                       title="Send message"
@@ -1088,7 +1640,374 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* MY NOTES VIEW: Document Editor & Chat History List */}
+        {view === "my_notes" && (
+          <div className="page-wrapper" style={{ display: "flex", flexDirection: "column", height: "calc(100vh - 2rem)" }}>
+            <header className="page-header" style={{ marginBottom: "1.5rem", flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div className="back-link" onClick={() => {
+                  if (notesSubjectFilter && currentSubject) {
+                    setView("subject_landing");
+                  } else {
+                    navigateHome();
+                  }
+                }}>
+                  <ArrowLeft size={12} style={{ marginRight: "4px", verticalAlign: "middle" }} />
+                  {notesSubjectFilter ? `Back to ${notesSubjectFilter}` : "Back to Home"}
+                </div>
+                <h1 className="page-title">My Note</h1>
+                <p className="page-subtitle">Manage study notes, teacher materials, and saved chat threads.</p>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                {notesSubjectFilter && (
+                  <button
+                    onClick={() => setNotesSubjectFilter("")}
+                    className="btn-secondary"
+                    style={{
+                      padding: "0.4rem 0.8rem",
+                      borderRadius: "8px",
+                      fontSize: "0.8rem",
+                      fontWeight: 500
+                    }}
+                  >
+                    Clear Filter
+                  </button>
+                )}
+                
+                {/* Upload note file */}
+                <input
+                  type="file"
+                  ref={uploadFileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleNoteFileUpload}
+                  accept=".txt,.md,.json,.js,.py,.rs,.c,.cpp,.java,.html,.css"
+                />
+                <button
+                  onClick={() => uploadFileInputRef.current?.click()}
+                  className="btn-secondary"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    padding: "0.4rem 0.8rem",
+                    borderRadius: "8px",
+                    fontSize: "0.8rem",
+                    fontWeight: 500
+                  }}
+                >
+                  <UploadCloud size={14} />
+                  <span>Upload File</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    setFormModalPrefill({});
+                    setIsFormModalUpload(false);
+                    setIsFormModalOpen(true);
+                  }}
+                  className="btn-primary"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    padding: "0.4rem 0.8rem",
+                    borderRadius: "8px",
+                    fontSize: "0.8rem",
+                    fontWeight: 500,
+                    boxShadow: "var(--shadow-sm)"
+                  }}
+                >
+                  <Plus size={14} />
+                  <span>New Note</span>
+                </button>
+              </div>
+            </header>
+
+            {/* Switcher Tabs */}
+            <div className="notes-section-tabs" style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--divider)", marginBottom: "1rem", paddingBottom: "0.25rem", flexShrink: 0 }}>
+              <button
+                className={`notes-tab-btn ${activeNotesSection === "notes" ? "active" : ""}`}
+                onClick={() => setActiveNotesSection("notes")}
+                style={{
+                  padding: "0.5rem 1rem",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: activeNotesSection === "notes" ? "2px solid var(--primary)" : "2px solid transparent",
+                  color: activeNotesSection === "notes" ? "var(--text-primary)" : "var(--text-secondary)",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  fontSize: "0.9rem"
+                }}
+              >
+                Notes ({notes.filter(n => !notesSubjectFilter || n.subjectName === notesSubjectFilter).length})
+              </button>
+              <button
+                className={`notes-tab-btn ${activeNotesSection === "chats" ? "active" : ""}`}
+                onClick={() => setActiveNotesSection("chats")}
+                style={{
+                  padding: "0.5rem 1rem",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: activeNotesSection === "chats" ? "2px solid var(--primary)" : "2px solid transparent",
+                  color: activeNotesSection === "chats" ? "var(--text-primary)" : "var(--text-secondary)",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  fontSize: "0.9rem"
+                }}
+              >
+                Saved Chats ({savedChats.filter(c => !notesSubjectFilter || c.subjectName === notesSubjectFilter).length})
+              </button>
+            </div>
+
+            {/* Split layout workspace */}
+            <div className="notes-workspace-layout" style={{ display: "flex", flex: 1, overflow: "hidden", border: "1px solid var(--divider)", borderRadius: "16px", background: "var(--bg-surface)", backdropFilter: "blur(12px)" }}>
+              {/* Left sidebar: items listing */}
+              <div className="notes-list-pane" style={{ width: "320px", borderRight: "1px solid var(--divider)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
+                {activeNotesSection === "notes" ? (
+                  <>
+                    <div className="notes-search-container" style={{ padding: "0.75rem", borderBottom: "1px solid var(--divider)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <Search size={16} className="text-secondary" />
+                      <input
+                        type="text"
+                        placeholder="Search notes..."
+                        value={notesSearchQuery}
+                        onChange={(e) => setNotesSearchQuery(e.target.value)}
+                        style={{ width: "100%", border: "none", background: "transparent", color: "var(--text-primary)", outline: "none", fontSize: "0.85rem" }}
+                      />
+                    </div>
+
+                    <div className="notes-items-list" style={{ flex: 1, overflowY: "auto", padding: "0.5rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      {notes
+                        .filter(n => !notesSubjectFilter || n.subjectName === notesSubjectFilter)
+                        .filter(n => !notesSearchQuery.trim() || n.title.toLowerCase().includes(notesSearchQuery.toLowerCase()) || n.content.toLowerCase().includes(notesSearchQuery.toLowerCase()))
+                        .length === 0 ? (
+                        <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.8rem", marginTop: "2rem" }}>
+                          No notes found.
+                        </div>
+                      ) : (
+                        notes
+                          .filter(n => !notesSubjectFilter || n.subjectName === notesSubjectFilter)
+                          .filter(n => !notesSearchQuery.trim() || n.title.toLowerCase().includes(notesSearchQuery.toLowerCase()) || n.content.toLowerCase().includes(notesSearchQuery.toLowerCase()))
+                          .map((note) => (
+                            <div
+                              key={note.id}
+                              className={`note-list-item ${selectedNoteId === note.id ? "active" : ""}`}
+                              onClick={() => setSelectedNoteId(note.id)}
+                            >
+                              <div className="note-item-header">
+                                <span className="note-format-badge">{note.format || "Other"}</span>
+                                <span className="note-date">{new Date(note.updatedAt).toLocaleDateString()}</span>
+                              </div>
+                              <div className="note-item-title">{note.title || "Untitled Note"}</div>
+                              <div className="note-item-snippet">{note.content || "Empty content."}</div>
+                              <div className="note-item-meta-row">
+                                {note.subjectName && <span className="note-subject-tag">{note.subjectName}</span>}
+                              </div>
+                              <button
+                                className="note-delete-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (confirm(`Delete note "${note.title}"?`)) {
+                                    handleDeleteNoteState(note.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 size={13} />
+                              </button>
+                            </div>
+                          ))
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="notes-search-container" style={{ padding: "0.75rem", borderBottom: "1px solid var(--divider)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <Search size={16} className="text-secondary" />
+                      <input
+                        type="text"
+                        placeholder="Search saved chats..."
+                        value={chatsSearchQuery}
+                        onChange={(e) => setChatsSearchQuery(e.target.value)}
+                        style={{ width: "100%", border: "none", background: "transparent", color: "var(--text-primary)", outline: "none", fontSize: "0.85rem" }}
+                      />
+                    </div>
+
+                    <div className="notes-items-list" style={{ flex: 1, overflowY: "auto", padding: "0.5rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                      {savedChats
+                        .filter(c => !notesSubjectFilter || c.subjectName === notesSubjectFilter)
+                        .filter(c => !chatsSearchQuery.trim() || c.title.toLowerCase().includes(chatsSearchQuery.toLowerCase()))
+                        .length === 0 ? (
+                        <div style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "0.8rem", marginTop: "2rem" }}>
+                          No saved chats found.
+                        </div>
+                      ) : (
+                        savedChats
+                          .filter(c => !notesSubjectFilter || c.subjectName === notesSubjectFilter)
+                          .filter(c => !chatsSearchQuery.trim() || c.title.toLowerCase().includes(chatsSearchQuery.toLowerCase()))
+                          .map((chat) => (
+                            <div
+                              key={chat.id}
+                              className="note-list-item saved-chat-list-item"
+                              onClick={() => handleOpenSavedChat(chat)}
+                            >
+                              <div className="note-item-header">
+                                <span className="note-format-badge chat-badge">Chat History</span>
+                                <span className="note-date">{new Date(chat.createdAt).toLocaleDateString()}</span>
+                              </div>
+                              <div className="note-item-title">{chat.title}</div>
+                              <div className="note-item-snippet">
+                                {chat.messages.length} messages. Last: {chat.messages[chat.messages.length - 1]?.content.substring(0, 50)}...
+                              </div>
+                              <div className="note-item-meta-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.25rem" }}>
+                                {chat.subjectName && <span className="note-subject-tag">{chat.subjectName}</span>}
+                                <button
+                                  className="note-delete-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (confirm(`Delete saved chat "${chat.title}"?`)) {
+                                      handleDeleteSavedChatState(chat.id);
+                                    }
+                                  }}
+                                  style={{ position: "static", opacity: 0.8 }}
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Right panel: editor workspace */}
+              <div className="notes-editor-pane" style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                {activeNotesSection === "notes" && selectedNoteId && notes.find(n => n.id === selectedNoteId) ? (() => {
+                  const activeNote = notes.find(n => n.id === selectedNoteId)!;
+                  return (
+                    <div className="note-editor-container" style={{ flex: 1, display: "flex", flexDirection: "column", padding: "1.25rem", overflow: "hidden" }}>
+                      {/* Status header */}
+                      <div className="editor-status-bar" style={{ display: "flex", alignItems: "center", gap: "1rem", fontSize: "0.75rem", color: "var(--text-secondary)", borderBottom: "1px solid var(--divider)", paddingBottom: "0.5rem", marginBottom: "0.75rem" }}>
+                        <div className="status-item local" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                          <Database size={12} />
+                          <span>Local Storage (Device Secured)</span>
+                        </div>
+                        <div className="status-item cloud" style={{ display: "flex", alignItems: "center", gap: "0.25rem", color: "var(--accent-teal)" }}>
+                          <Cloud size={12} />
+                          <span>GCS Cloud Sync Ready</span>
+                        </div>
+                        {saveStatus && (
+                          <span style={{ marginLeft: "auto", fontStyle: "italic", color: "var(--text-muted)" }}>
+                            {saveStatus}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Title Edit */}
+                      <input
+                        type="text"
+                        value={activeNote.title}
+                        onChange={(e) => handleUpdateNoteTitle(e.target.value)}
+                        className="note-title-editor"
+                        placeholder="Untitled Note"
+                        style={{ width: "100%", border: "none", background: "transparent", color: "var(--text-primary)", fontSize: "1.5rem", fontWeight: 700, outline: "none", marginBottom: "0.25rem" }}
+                      />
+
+                      {/* Meta Tags Details */}
+                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+                        {activeNote.semester && <span className="badge" style={{ fontSize: "0.7rem" }}>Semester: {activeNote.semester.replace(/_/g, " ")}</span>}
+                        {activeNote.subjectName && <span className="badge" style={{ fontSize: "0.7rem" }}>Subject: {activeNote.subjectName}</span>}
+                        {activeNote.format && <span className="badge badge-elective" style={{ fontSize: "0.7rem" }}>{activeNote.format}</span>}
+                      </div>
+
+                      {/* Tab modes */}
+                      <div className="editor-tabs-row" style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--divider)", marginBottom: "0.75rem", paddingBottom: "0.25rem" }}>
+                        <button
+                          className={`editor-tab-btn ${editorMode === "write" ? "active" : ""}`}
+                          onClick={() => setEditorMode("write")}
+                          style={{
+                            padding: "0.3rem 0.6rem",
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            background: editorMode === "write" ? "var(--primary-weak)" : "transparent",
+                            border: "none",
+                            borderRadius: "6px",
+                            color: editorMode === "write" ? "var(--primary)" : "var(--text-secondary)",
+                            cursor: "pointer"
+                          }}
+                        >
+                          Write (Markdown)
+                        </button>
+                        <button
+                          className={`editor-tab-btn ${editorMode === "preview" ? "active" : ""}`}
+                          onClick={() => setEditorMode("preview")}
+                          style={{
+                            padding: "0.3rem 0.6rem",
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            background: editorMode === "preview" ? "var(--primary-weak)" : "transparent",
+                            border: "none",
+                            borderRadius: "6px",
+                            color: editorMode === "preview" ? "var(--primary)" : "var(--text-secondary)",
+                            cursor: "pointer"
+                          }}
+                        >
+                          Preview Math &amp; Markdown
+                        </button>
+                      </div>
+
+                      {/* Workspace fields */}
+                      <div className="editor-body-workspace" style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+                        {editorMode === "write" ? (
+                          <textarea
+                            value={activeNote.content}
+                            onChange={(e) => handleUpdateNoteContent(e.target.value)}
+                            className="note-body-textarea"
+                            placeholder="Start typing your notes here. Supports Markdown formatting (**bold**, # Header) and LaTeX formulas ($E=mc^2$ or $$f(x)=x^2$$)."
+                            style={{ width: "100%", flex: 1, border: "none", background: "transparent", color: "var(--text-primary)", outline: "none", resize: "none", fontSize: "0.95rem", lineHeight: 1.6 }}
+                          />
+                        ) : (
+                          <div
+                            className="note-body-preview"
+                            dangerouslySetInnerHTML={{ __html: renderMarkdownAndMath(activeNote.content) || "<p style='color:var(--text-muted);font-style:italic;'>Empty content. Type in Write tab to preview.</p>" }}
+                            style={{ flex: 1, overflowY: "auto", fontSize: "0.95rem", lineHeight: 1.6 }}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })() : activeNotesSection === "notes" ? (
+                  <div className="notes-empty-state" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, padding: "2rem", color: "var(--text-secondary)" }}>
+                    <Notebook size={48} style={{ opacity: 0.3, marginBottom: "1rem" }} />
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>No Note Selected</h3>
+                    <p style={{ fontSize: "0.85rem", opacity: 0.8, marginTop: "0.25rem", textAlign: "center" }}>Select a note from the left panel, upload a document, or create a new one to begin editing.</p>
+                  </div>
+                ) : (
+                  <div className="notes-empty-state" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, padding: "2rem", color: "var(--text-secondary)" }}>
+                    <Sparkles size={48} style={{ opacity: 0.3, marginBottom: "1rem" }} />
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Saved Chat Histories</h3>
+                    <p style={{ fontSize: "0.85rem", opacity: 0.8, marginTop: "0.25rem", textAlign: "center" }}>Select a saved conversation thread from the left list to restore the session and continue asking questions.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        {currentUser && <AdBanner />}
       </main>
+
+      {/* Note Form Modal popup */}
+      <NoteFormModal
+        isOpen={isFormModalOpen}
+        onClose={() => setIsFormModalOpen(false)}
+        onSubmit={handleCreateOrUploadNoteConfirm}
+        syllabus={syllabus}
+        prefilledData={formModalPrefill}
+        isUpload={isFormModalUpload}
+      />
 
       {/* Settings Panel Modal popup */}
       <SettingsModal

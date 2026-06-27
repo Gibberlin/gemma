@@ -13,6 +13,7 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "@types/katex": "^0.16.8",
+    "firebase": "^12.15.0",
     "katex": "^0.17.0",
     "lucide-react": "^1.21.0",
     "marked": "^18.0.5",
